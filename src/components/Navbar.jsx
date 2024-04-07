@@ -11,7 +11,7 @@ function Navbar() {
             <div className="logo text-start">
               <Link to="/">
                 <img
-                  src="src\assets\silly doggy.png"
+                  src="src\assets\SillyDoggy.png"
                   width="50"
                   height="50"
                   alt="Logo"
@@ -19,7 +19,7 @@ function Navbar() {
               </Link>
             </div>
           </div>
-          <div className="col-7 col-md-2">
+          <div className="col-7 col-md-3">
             <nav className="navbar-links text-start">
               <Link className="home-link" to="/">Silly Dog Wiki</Link>
               <ul className="d-flex">
