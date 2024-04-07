@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./css/Navbar.css";
+import SillyDoggyImage from '../assets/SillyDoggy.png';
 
 function Navbar() {
   return (
@@ -11,7 +12,7 @@ function Navbar() {
             <div className="logo text-start">
               <Link to="/">
                 <img
-                  src='src/assets/SillyDoggy.png'
+                  src={SillyDoggyImage}
                   width="50"
                   height="50"
                   alt="Logo"
