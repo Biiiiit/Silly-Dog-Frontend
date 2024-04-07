@@ -11,7 +11,7 @@ function Navbar() {
             <div className="logo text-start">
               <Link to="/">
                 <img
-                  src='assets/SillyDoggy.png'
+                  src='src/assets/SillyDoggy.png'
                   width="50"
                   height="50"
                   alt="Logo"
