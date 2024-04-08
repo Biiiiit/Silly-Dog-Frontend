@@ -11,10 +11,16 @@
   },
   "dependencies": {
     "axios": "^1.6.8",
+    "babel-polyfill": "^6.26.0",
     "bootstrap": "^5.3.3",
+    "draft-js": "^0.11.7",
+    "install": "^0.13.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3"
+    "react-draft-wysiwyg": "^1.15.0",
+    "react-quill": "^2.0.0",
+    "react-router-dom": "^6.22.3",
+    "react-slate": "^0.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.14",
