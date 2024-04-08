@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ContentContainer from '../components/ContentContainer';
-import { EditorState, convertToRaw } from 'draft-js';
+import { EditorState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
+import { convertToHTML } from 'draft-convert';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './css/CreateSillyDog.css';
 
@@ -9,6 +10,14 @@ const CreateDogPage = () => {
   const [editorState, setEditorState] = useState(
     () => EditorState.createEmpty(),
   );
+  const [convertedContent, setConvertedContent] = useState(null);
+
+  useEffect(() => {
+    let html = convertToHTML(editorState.getCurrentContent());
+    setConvertedContent(html);
+  }, [editorState]);
+
+  console.log(convertedContent);
 
   const onEditorStateChange = (newEditorState) => {
     setEditorState(newEditorState);
@@ -31,9 +40,6 @@ const CreateDogPage = () => {
               toolbarClassName="toolbar-class"
             />
           </div>
-          <button onClick={() => console.log(convertToRaw(editorState.getCurrentContent()))}>
-            Log Content State
-          </button>
         </div>
       </div>
     </ContentContainer>
