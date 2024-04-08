@@ -3,7 +3,7 @@ import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import CreateSillyDog from "./pages/CreateSillyDog";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Navbar from './components/NavBar';
+import Navbar from './components/Navbar';
 
 function App() {
   return (
