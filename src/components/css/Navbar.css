@@ -97,10 +97,10 @@
   position: absolute;
   border-radius: 10px; /* Add border radius to round corners */
   background-color: #006992; /* Change background color */
-  min-width: 160px;
+  min-width: 168px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
-  padding: 10px; /* Add padding for spacing */
+  padding: 5px; /* Add padding for spacing */
   left: 50%; /* Position the dropdown menu horizontally */
   transform: translateX(-50%);/* Center the dropdown menu relative to its parent */
 }

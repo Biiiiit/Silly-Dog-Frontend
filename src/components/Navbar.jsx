@@ -38,7 +38,7 @@ function Navbar() {
                   <div class="dropdown">
                     <a href="#" class="dropbtn">Contribution</a>
                       <div class="dropdown-content">
-                        <a href="#">Link 1</a>
+                        <Link to="/CreateSillyDog">Create a Silly Dog</Link>
                         <a href="#">Link 2</a>
                         <a href="#">Link 3</a>
                       </div>

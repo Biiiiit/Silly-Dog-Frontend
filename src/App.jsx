@@ -1,6 +1,7 @@
 import './App.css';
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
-import HomePage from "./pages/HomePage"
+import HomePage from "./pages/HomePage";
+import CreateSillyDog from "./pages/CreateSillyDog";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from "./components/Navbar";
 
@@ -12,6 +13,7 @@ function App() {
         <Navbar></Navbar>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/CreateSillyDog" element={<CreateSillyDog />} />
           </Routes>
         </Router>
       </div>
