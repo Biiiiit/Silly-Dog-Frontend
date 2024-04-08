@@ -25,10 +25,24 @@ function Navbar() {
               <Link className="home-link" to="/">Silly Dog Wiki</Link>
               <ul className="d-flex">
                 <li>
-                  <Link to="/about">About</Link>
+                  <div class="dropdown">
+                    <a href="#" class="dropbtn">Navigation</a>
+                      <div class="dropdown-content">
+                        <a href="#">Link 1</a>
+                        <a href="#">Link 2</a>
+                        <a href="#">Link 3</a>
+                      </div>
+                  </div>
                 </li>
                 <li>
-                  <Link to="/services">Services</Link>
+                  <div class="dropdown">
+                    <a href="#" class="dropbtn">Contribution</a>
+                      <div class="dropdown-content">
+                        <a href="#">Link 1</a>
+                        <a href="#">Link 2</a>
+                        <a href="#">Link 3</a>
+                      </div>
+                  </div>
                 </li>
                 <li>
                   <Link to="/contact">Contact</Link>

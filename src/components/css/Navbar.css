@@ -24,7 +24,8 @@
   align-items: center;
   background-color: transparent;
   padding: 20px;
-  margin: 5%;
+  margin: 3%;
+  margin-left: 3.2%;
   margin-bottom: -5%;
 }
 
@@ -36,7 +37,13 @@
 .home-link {
   color: #fff;
   text-decoration: none;
-  font-size: x-large;
+  font-size: 40px;
+  text-shadow: 0 0 3px black, 0 0 3px black, 0 0 3px black, 0 0 3px black, 0 0 3px black;
+  transition: color 0.3s ease;
+}
+
+.home-link:hover {
+  color: rgb(177, 255, 255);
 }
 
 .navbar-links {
@@ -57,9 +64,62 @@
 .navbar-links ul li a {
   color: #fff;
   text-decoration: none;
+  transition: text-shadow 0.3s ease; /* Add transition effect */
+  transition: color 0.3s ease;
+}
+
+.navbar-links ul li a:hover {
+  color: rgb(177, 255, 255);
+  text-shadow: 0 0 3px black, 0 0 3px black, 0 0 3px black, 0 0 3px black, 0 0 3px black; /* Add text shadow on hover */
 }
 
 /* Styling for active link if using React Router */
 .navbar-links ul li a.active {
   font-weight: bold;
+}
+
+.dropbtn {
+  background-color: transparent;
+  color: white;
+  font-size: 16px;
+  border: none;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  border-radius: 10px; /* Add border radius to round corners */
+  background-color: #006992; /* Change background color */
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  padding: 10px; /* Add padding for spacing */
+  left: 50%; /* Position the dropdown menu horizontally */
+  transform: translateX(-50%);/* Center the dropdown menu relative to its parent */
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: #fff; /* Change link color */
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  transition: color 0.3s ease; /* Add transition effect */
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+  color: rgb(177, 255, 255); /* Change text color on hover */
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
 }
