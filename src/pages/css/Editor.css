@@ -1,0 +1,74 @@
+.editor-container {
+    border: 1px solid transparent;
+  }
+  
+  .editor-container .rdw-editor-toolbar {
+    background-color: #007eaf;
+    border: 1px solid rgb(197, 197, 197);
+    border-radius: 5px;
+  }
+  
+  .editor-container .rdw-editor-main {
+    border: none;
+    background-color: transparent;
+  }
+  
+  .editor-container .rdw-editor-toolbar .rdw-option-wrapper {
+    height: 36px;
+    width: 40px;
+    background-color: transparent;
+    border: none;
+  }
+  
+  .editor-container .rdw-editor-toolbar .rdw-option-wrapper:hover {
+    background-color: #0093ce; /* Change background color on hover */
+  }
+  
+  .editor-container .rdw-editor-toolbar .rdw-option-active {
+    background-color: #0093ce; /* Set background color when selected */
+  }
+  
+  .editor-container .rdw-editor-toolbar .rdw-dropdown-selectedtext {
+    color: #ffffff; 
+    text-decoration: none; 
+  }
+  
+  .editor-container .rdw-editor-toolbar .rdw-dropdown-selectedtext:hover {
+    cursor: pointer; 
+  }
+  
+  .rdw-dropdown-optionwrapper {
+    background-color: #007eaf;
+    overflow-y: hidden;
+  }
+  .rdw-dropdown-optionwrapper:hover {
+    background-color: #007eaf;
+  }
+  .rdw-dropdownoption-highlighted:hover{
+    background-color: #009edd;
+  }
+  .rdw-dropdownoption-active {
+    background-color: #00a8eb !important;
+  }
+  .editor-container .rdw-editor-toolbar .rdw-dropdown-wrapper {
+    height: 36px;
+    background-color: transparent;
+    border: none;
+    border-left: 1px solid white !important;
+    border-right: 1px solid white !important;
+    border-radius: 0% !important;
+  }
+  
+  .editor-container .rdw-editor-toolbar .rdw-dropdown-wrapper .rdw-dropdown {
+    top: 36px;
+  }
+  
+  .editor-container .rdw-editor-toolbar .rdw-option-wrapper .rdw-option,
+  .editor-container .rdw-editor-toolbar .rdw-dropdown-wrapper .rdw-dropdown .rdw-dropdown-optionwrapper {
+    margin: 0 4px;
+  }
+  
+  .editor-container .rdw-editor-toolbar .rdw-option-wrapper {
+    border: none; /* Remove border from individual buttons */
+  }
+  

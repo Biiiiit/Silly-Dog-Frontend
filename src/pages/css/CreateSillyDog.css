@@ -11,11 +11,6 @@
   padding: 12px;
 }
 
-.wrapper-class {
-  padding: 1rem;
-  border: 1px solid #ccc;
-}
-
 .editor-class {
   background-color: lightgray;
   padding: 1rem;
@@ -29,37 +24,4 @@
 .preview {
   padding: 1rem;
   margin-top: 1rem;
-}
-
-.editor-container .rdw-editor-toolbar {
-  /* Target the toolbar */
-  background-color: #f0f0f0;
-  /* Example background color */
-  border: 1px solid #ccc;
-  /* Example border */
-}
-
-.editor-container .rdw-editor-toolbar .rdw-option-wrapper {
-  /* Target the individual buttons and dropdowns */
-  height: 36px;
-  width: 40px;
-  /* Example height */
-}
-
-.editor-container .rdw-editor-toolbar .rdw-dropdown-wrapper {
-  /* Target the dropdown wrappers */
-  height: 36px;
-  /* Example height */
-}
-
-.editor-container .rdw-editor-toolbar .rdw-dropdown-wrapper .rdw-dropdown {
-  /* Target the dropdown options */
-  top: 36px;
-  /* Example position */
-}
-
-.editor-container .rdw-editor-toolbar .rdw-option-wrapper .rdw-option,
-.editor-container .rdw-editor-toolbar .rdw-dropdown-wrapper .rdw-dropdown .rdw-dropdown-optionwrapper {
-  /* Target the button elements and dropdown option wrappers */
-  margin: 0 4px;
 }
