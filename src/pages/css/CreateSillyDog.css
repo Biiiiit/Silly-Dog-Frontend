@@ -11,6 +11,11 @@
   padding: 12px;
 }
 
+.editorpage-content {
+  display: flex;
+  align-items: center;
+}
+
 .editor-class {
   background-color: lightgray;
   padding: 1rem;
@@ -24,4 +29,28 @@
 .preview {
   padding: 1rem;
   margin-top: 1rem;
+}
+
+h1 {
+  position: relative;
+  width: 86.05vw;
+}
+
+.name {
+  margin: 0;
+}
+h1::after {
+  content: "";
+  display: block;
+  width: 86.05vw;
+  height: 2px; /* Adjust the height of the divider as needed */
+  background-color: #0093ce; /* Adjust the color of the divider as needed */
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+}
+
+/* Exclude dividers for h1 elements with the .name class */
+h1.name::after {
+  display: none;
 }
