@@ -31,7 +31,7 @@
   margin-top: 1rem;
 }
 
-h1 {
+.editorpage-content h1 {
   position: relative;
   width: 86.05vw;
 }
@@ -39,7 +39,8 @@ h1 {
 .name {
   margin: 0;
 }
-h1::after {
+
+.editorpage-content h1::after {
   content: "";
   display: block;
   width: 86.05vw;
@@ -51,6 +52,6 @@ h1::after {
 }
 
 /* Exclude dividers for h1 elements with the .name class */
-h1.name::after {
+.editorpage-content h1.name::after {
   display: none;
 }

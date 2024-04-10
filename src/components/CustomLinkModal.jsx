@@ -32,7 +32,7 @@ const CustomLinkModal = ({ onCancel, visible, onAddLink }) => {
       onAddLink(linkUrl);
   
       // Close custom modal
-    //   onCancel();
+      onCancel();
     }
   };
 

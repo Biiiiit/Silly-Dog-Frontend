@@ -13,6 +13,7 @@ const CreateDogPage = () => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const [showEditor, setShowEditor] = useState(false);
   const [pageContent, setPageContent] = useState('placeholder for text');
+  const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
 
   const toggleEditor = () => {
     setShowEditor(!showEditor);
@@ -100,7 +101,7 @@ const CreateDogPage = () => {
     }
 
     // Add event listener to the default link button wrapper
-    const defaultLinkButton = document.querySelector('.rdw-option-wrapper[title="Link"]');
+    const defaultLinkButton = document.querySelector('.rdw-option-wrapper [title="Link"]');
     if (defaultLinkButton) {
       defaultLinkButton.addEventListener('click', handleDefaultLinkButtonClick);
     }
@@ -129,13 +130,13 @@ const CreateDogPage = () => {
   const handleAddLink = (url, title) => {
     // Get the current editor state
     let currentEditorState = editorState;
-  
+
     // Get the current content
     const contentState = currentEditorState.getCurrentContent();
-  
+
     // Get the selection
     const selectionState = currentEditorState.getSelection();
-  
+
     // Create a new content state with the URL as text
     const contentStateWithLink = Modifier.insertText(
       contentState,
@@ -144,30 +145,29 @@ const CreateDogPage = () => {
       null,
       Entity.create('LINK', 'MUTABLE', { url: url, title: title })
     );
-  
+
     // Update the editor state with the new content
     currentEditorState = EditorState.push(
       currentEditorState,
       contentStateWithLink,
       'insert-characters'
     );
-  
+
     // Move the selection to the end of the inserted link
     const newSelection = selectionState.merge({
       anchorOffset: selectionState.getEndOffset(),
       focusOffset: selectionState.getEndOffset(),
     });
-  
+
     // Set the new editor state with the updated selection
     currentEditorState = EditorState.forceSelection(currentEditorState, newSelection);
-  
+
     // Update the editor state
     setEditorState(currentEditorState);
-  
+
     // Close the custom link modal
     handleCloseModal();
   };
-  
 
   // Custom toolbar options
   const toolbarOptions = {
@@ -194,6 +194,7 @@ const CreateDogPage = () => {
     },
     link: {
       inDropdown: false,
+      // onClick: handleOpenCustomLinkModal, // Changed from openCustomLinkModal to handleOpenCustomLinkModal
     },
     embedded: {
       inDropdown: false,
@@ -203,7 +204,11 @@ const CreateDogPage = () => {
 
   return (
     <ContentContainer>
-      <CustomLinkModal />
+      <CustomLinkModal
+          onAddLink={handleAddLink} // Pass the function to receive link URL from custom modal
+          onCancel={handleCloseModal}
+          visible={showCustomLinkModal}
+        />
       <div className="editorpage-content">
         <div className="text-start">
           <h1 className='name'>Name:</h1>
