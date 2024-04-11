@@ -9,11 +9,7 @@
   margin-bottom: 5vh;
   text-align: center;
   padding: 12px;
-}
-
-.editorpage-content {
-  display: flex;
-  align-items: center;
+  width: 86.05vw;
 }
 
 .editor-class {
@@ -31,13 +27,14 @@
   margin-top: 1rem;
 }
 
-.editorpage-content h1 {
-  position: relative;
-  width: 86.05vw;
+.name {
+  margin: 0 !important;
 }
 
-.name {
-  margin: 0;
+.editorpage-content h1 {
+  position: relative;
+  /* width: 86.05vw; */
+  margin-bottom: 2%; /* Add margin after the border bottom */
 }
 
 .editorpage-content h1::after {
@@ -54,4 +51,37 @@
 /* Exclude dividers for h1 elements with the .name class */
 .editorpage-content h1.name::after {
   display: none;
+}
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.button-container {
+  display: flex;
+}
+
+.button-container {
+  display: flex;
+}
+
+.edit-button {
+  padding: 8px 16px;
+  margin-right: 8px; /* Add margin between the buttons */
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-button {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }

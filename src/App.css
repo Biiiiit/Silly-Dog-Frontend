@@ -110,7 +110,7 @@
   background-image: url('assets/SillyDogies.png');
   background-size: 50% auto; /* Set the initial width of the background image to 50% */
   background-repeat: repeat; /* Repeat the background image only horizontally */
-  filter: brightness(65%); /* Adjust the brightness level as needed */
+  filter: brightness(45%); /* Adjust the brightness level as needed */
   animation: slideBackground 8s linear infinite; /* Adjust animation duration */
   z-index: -1; /* Ensure the background stays behind other content */
 }

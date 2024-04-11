@@ -11,9 +11,10 @@ const HomePage = () => {
             <img src={DogImage} alt="Silly Dog" className="dog-image" />
             <div className="text-content">
               <h1>Welcome to Silly Dog Wiki!</h1>
-              <p>This is the place for all your silliness and inquiries about doggies.</p>
+              <p>This is the place for all your sillyness and inquiries about doggies.</p>
               <p>Feel free to look for some silly dogs and have fun.</p>
               <p>Disclaimer: This is not related to the Silly Cat Wiki, this is just a hobby project</p>
+              <p>Feel free to add to the collection of doggies however {":)"}</p>
             </div>
           </div>
         </div>
