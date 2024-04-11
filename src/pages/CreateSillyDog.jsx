@@ -9,6 +9,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './css/CreateSillyDog.css';
 import './css/Editor.css';
 import CustomLinkModal from '../components/CustomLinkModal';
+import SillyDogDisplay from '../components/SillyDogDisplayer';
 
 const CreateDogPage = () => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
@@ -225,51 +226,56 @@ const CreateDogPage = () => {
   return (
     <ContentContainer>
       <CustomLinkModal
-        onAddLink={handleAddLink} // Pass the function to receive link URL from custom modal
+        onAddLink={handleAddLink}
         onCancel={handleCloseModal}
         visible={showCustomLinkModal}
       />
-      <div className="editorpage-content">
-        <div className="text-start">
-          <div className="header-container">
-            <h1 className='name'>Name:</h1>
-            <div className="button-container">
-              <button onClick={toggleEditor} className="edit-button">
-                {showEditor ? 'Hide Editor' : 'Edit'}
-              </button>
-              {showEditor && (
-                <button onClick={onSaveContent} className="save-button">Save</button>
-              )}
-            </div>
-          </div>
-          <p>Created by username on date</p>
-          <p>table of contents</p>
-          {showEditor ? (
-            <div className="editor-container">
-              <Editor
-                editorState={editorState}
-                onEditorStateChange={onEditorStateChange}
-                wrapperClassName="wrapper-class"
-                editorClassName="editor-class"
-                toolbarClassName="toolbar-class"
-                toolbar={toolbarOptions}
-                handleKeyCommand={(command, editorState) => {
-                  const newState = RichUtils.handleKeyCommand(editorState, command);
-                  if (newState) {
-                    onEditorStateChange(newState);
-                    return 'handled';
-                  }
-                  return 'not-handled';
-                }}
-              />
-            </div>
-          ) : (
-            <div className="page-content" dangerouslySetInnerHTML={createMarkup(pageContent)}></div>
+      <header className="header-container">
+        <h1 className='name'>Name:</h1>
+        <div className="button-container">
+          <button onClick={toggleEditor} className="edit-button">
+            {showEditor ? 'Hide Editor' : 'Edit'}
+          </button>
+          {showEditor && (
+            <button onClick={onSaveContent} className="save-button">Save</button>
           )}
+        </div>
+      </header>
+      <p className='align-left'>Created by username on date</p>
+      <div className="editorpage-content">
+        <div className="text-and-display-container">
+          <section className="text-container">
+            <p>table of contents</p>
+            {showEditor ? (
+              <div className="editor-container">
+                <Editor
+                  editorState={editorState}
+                  onEditorStateChange={onEditorStateChange}
+                  wrapperClassName="wrapper-class"
+                  editorClassName="editor-class"
+                  toolbarClassName="toolbar-class"
+                  toolbar={toolbarOptions}
+                  handleKeyCommand={(command, editorState) => {
+                    const newState = RichUtils.handleKeyCommand(editorState, command);
+                    if (newState) {
+                      onEditorStateChange(newState);
+                      return 'handled';
+                    }
+                    return 'not-handled';
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="page-content" dangerouslySetInnerHTML={createMarkup(pageContent)}></div>
+            )}
+          </section>
+          <aside className="silly-dog-display-container">
+            <SillyDogDisplay /*dog={dogData}*/ />
+          </aside>
         </div>
       </div>
     </ContentContainer>
-  );
+  );      
 };
 
 export default CreateDogPage;

@@ -85,3 +85,27 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.editorpage-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-and-display-container {
+  display: flex;
+}
+
+.text-container {
+  flex-grow: 1;
+  text-align: start;
+  overflow: hidden;
+}
+
+.silly-dog-display-container {
+  width: 300px;
+  margin-left: 20px;
+}
+
+.align-left {
+  text-align: start;
+}

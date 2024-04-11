@@ -1,0 +1,37 @@
+.silly-dog-display {
+    height: auto;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid black;
+    padding: 20px;
+    border-radius: 10px;
+    margin-left: auto;
+  }
+  
+  .silly-dog-display img {
+    max-width: 100%;
+    max-height: 300px;
+    margin-bottom: 20px;
+  }
+  
+  .silly-dog-display h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .silly-dog-display hr {
+    width: 100%;
+    margin: 20px 0;
+  }
+  
+  .silly-dog-display .bio-info,
+  .silly-dog-display .physical-description {
+    display: flex;
+  }
+  
+  .silly-dog-display .bio-info p,
+  .silly-dog-display .physical-description p {
+    margin-right: 20px;
+  }
