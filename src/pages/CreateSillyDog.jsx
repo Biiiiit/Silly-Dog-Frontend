@@ -266,16 +266,16 @@ const CreateDogPage = () => {
                 />
               </div>
             ) : (
-              <div className="page-content" dangerouslySetInnerHTML={createMarkup(pageContent)}></div>
+              <div className="page-content">
+                <p dangerouslySetInnerHTML={createMarkup(pageContent)}></p>
+                <SillyDogDisplay /*dog={dogData}*/ />
+              </div>
             )}
           </section>
-          <div className="silly-dog-display-container">
-            <SillyDogDisplay /*dog={dogData}*/ />
-          </div>
         </div>
       </div>
     </ContentContainer>
-  );      
+  );  
 };
 
 export default CreateDogPage;

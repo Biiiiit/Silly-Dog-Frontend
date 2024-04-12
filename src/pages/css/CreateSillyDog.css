@@ -21,7 +21,10 @@
 .toolbar-class {
   border: 1px solid #ccc;
 }
-
+.p{
+  flex-grow: 1;
+  width: 100%;
+}
 .preview {
   padding: 1rem;
   margin-top: 1rem;
@@ -40,9 +43,9 @@
 .editorpage-content h1::after {
   content: "";
   display: block;
-  width: 86.05vw;
-  height: 2px; /* Adjust the height of the divider as needed */
-  background-color: #0093ce; /* Adjust the color of the divider as needed */
+  width: calc(100% - 20px); /* Adjust as needed, subtracting the width of .silly-dog-display and its margin */
+  height: 2px;
+  background-color: #0093ce;
   position: absolute;
   bottom: -8px;
   left: 0;
@@ -93,6 +96,7 @@
 
 .text-and-display-container {
   display: flex;
+  position: relative; /* Ensure relative positioning for proper alignment */
 }
 
 .text-container {
@@ -108,4 +112,11 @@
 
 .align-left {
   text-align: start;
+}
+
+.page-content {
+  display: flex; /* Display children elements in a row */
+  align-items: flex-start; /* Align items at the start of the cross axis */
+  overflow: hidden;
+  text-align: justify;
 }
