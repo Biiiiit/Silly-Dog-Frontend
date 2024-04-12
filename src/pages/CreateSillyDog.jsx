@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ContentContainer from '../components/ContentContainer';
 import { EditorState, RichUtils, Modifier, Entity, convertToRaw, convertFromRaw, convertFromHTML, ContentState } from 'draft-js';
 import { convertToHTML } from 'draft-convert';
-import { stateToHTML } from 'draft-js-export-html';
+import html2canvas from 'html2canvas';
 import DOMPurify from 'dompurify';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
@@ -269,9 +269,9 @@ const CreateDogPage = () => {
               <div className="page-content" dangerouslySetInnerHTML={createMarkup(pageContent)}></div>
             )}
           </section>
-          <aside className="silly-dog-display-container">
+          <div className="silly-dog-display-container">
             <SillyDogDisplay /*dog={dogData}*/ />
-          </aside>
+          </div>
         </div>
       </div>
     </ContentContainer>
