@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ContentContainer from '../components/ContentContainer';
 import { EditorState, RichUtils, Modifier, Entity, convertToRaw, convertFromRaw, convertFromHTML, ContentState } from 'draft-js';
 import { convertToHTML } from 'draft-convert';
-import html2canvas from 'html2canvas';
+import parse from 'html-react-parser';
 import DOMPurify from 'dompurify';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
@@ -64,8 +64,13 @@ const CreateDogPage = () => {
       },
     })(contentState);
 
-    // Manipulate the HTML to handle empty blocks
-    html = html.replace(/<p><\/p>/g, '<br>');
+    // Replace all <p><br/></p> with <br>
+    html = html.replace(/<p><br\s*\/?><\/p>/g, '<br>');
+
+    // Replace remaining <p> tags with a single <br> each
+    html = html.replace(/<p>/g, '<br>');
+
+    console.log(html); // Log the HTML to check if it's correct
 
     // Save the HTML content
     setPageContent(html);
@@ -245,7 +250,7 @@ const CreateDogPage = () => {
       <div className="editorpage-content">
         <div className="text-and-display-container">
           <section className="text-container">
-            <p>table of contents</p>
+            <p className='align-left'>table of contents</p>
             {showEditor ? (
               <div className="editor-container">
                 <Editor
@@ -267,8 +272,10 @@ const CreateDogPage = () => {
               </div>
             ) : (
               <div className="page-content">
-                <p className="page-text" dangerouslySetInnerHTML={createMarkup(pageContent)}></p>
+                <section className='page-text-container'>
+                  {parse(pageContent)}
                   <SillyDogDisplay /*dog={dogData}*/ />
+                </section>
               </div>
             )}
           </section>

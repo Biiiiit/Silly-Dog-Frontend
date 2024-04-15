@@ -21,6 +21,7 @@
 .toolbar-class {
   border: 1px solid #ccc;
 }
+
 .p{
   flex-grow: 1;
   width: 100%;
@@ -94,33 +95,19 @@
   flex-direction: column;
 }
 
-.text-and-display-container {
-  display: flex;
-  position: relative; /* Ensure relative positioning for proper alignment */
-}
-
-.text-container {
-  flex-grow: 1;
-  text-align: start;
-  overflow: hidden;
-}
-
-.silly-dog-display-container {
-  width: 300px;
-  margin-left: 20px;
-}
-
 .align-left {
   text-align: start;
 }
 
-.page-text {
-  width: 50%;
+.page-content {
+  display: flex;
+  flex-wrap: wrap; /* Allow text to wrap */
+  width: 86vw;
 }
 
-.page-content {
-  display: flex; /* Display children elements in a row */
-  align-items: flex-start; /* Align items at the start of the cross axis */
-  overflow: hidden;
-  justify-content: space-between;
+.page-text-container {
+  flex-grow: 1; /* Allow text container to grow */
+  min-width: 0; /* Ensure text container can shrink */
+  padding-right: 20px; /* Add space between text and display */
+  position: relative; /* Position the display relative to the text */
 }
