@@ -22,34 +22,36 @@ const SillyDogDisplay = () => {
   };
 
   return (
-    <div className="silly-dog-display">
-      <img src={dummyDog.image} alt="Dog" />
-      <p><strong>Description:</strong> {dummyDog.description}</p>
-      <p><strong>Status:</strong> {dummyDog.status}</p>
-      <p><strong>Nationality:</strong> {dummyDog.nationality}</p>
-      <div className="aliases-relatives">
-        <p><strong>Aliases:</strong> {dummyDog.aliases.join(', ')}</p>
-        <p><strong>Relatives:</strong> {dummyDog.relatives.join(', ')}</p>
-      </div>
-      <p><strong>Occupation:</strong> {dummyDog.occupation}</p>
-      <hr />
-      <h3>Biographical Information</h3>
-      <div className="bio-info">
-        <p><strong>Date of Birth:</strong> {dummyDog.dateOfBirth}</p>
-        <p><strong>Place of Birth:</strong> {dummyDog.placeOfBirth}</p>
-      </div>
-      <div className="bio-info">
-        <p><strong>Date of Death:</strong> {dummyDog.dateOfDeath}</p>
-        <p><strong>Place of Death:</strong> {dummyDog.placeOfDeath}</p>
-      </div>
-      <p><strong>Marital Status:</strong> {dummyDog.maritalStatus}</p>
-      <hr />
-      <h3>Physical Description</h3>
-      <p><strong>Gender:</strong> {dummyDog.gender}</p>
-      <div className="physical-description">
-        <p><strong>Height:</strong> {dummyDog.height}</p>
-        <p><strong>Weight:</strong> {dummyDog.weight}</p>
-      </div>
+    <div className='display-inline-block'>
+      <span className="silly-dog-display">
+        <img src={dummyDog.image} alt="Dog" />
+        <p><strong>Description:</strong> {dummyDog.description}</p>
+        <p><strong>Status:</strong> {dummyDog.status}</p>
+        <p><strong>Nationality:</strong> {dummyDog.nationality}</p>
+        <div className="aliases-relatives">
+          <p><strong>Aliases:</strong> {dummyDog.aliases.join(', ')}</p>
+          <p><strong>Relatives:</strong> {dummyDog.relatives.join(', ')}</p>
+        </div>
+        <p><strong>Occupation:</strong> {dummyDog.occupation}</p>
+        <hr />
+        <h3>Biographical Information</h3>
+        <div className="bio-info">
+          <p><strong>Date of Birth:</strong> {dummyDog.dateOfBirth}</p>
+          <p><strong>Place of Birth:</strong> {dummyDog.placeOfBirth}</p>
+        </div>
+        <div className="bio-info">
+          <p><strong>Date of Death:</strong> {dummyDog.dateOfDeath}</p>
+          <p><strong>Place of Death:</strong> {dummyDog.placeOfDeath}</p>
+        </div>
+        <p><strong>Marital Status:</strong> {dummyDog.maritalStatus}</p>
+        <hr />
+        <h3>Physical Description</h3>
+        <p><strong>Gender:</strong> {dummyDog.gender}</p>
+        <div className="physical-description">
+          <p><strong>Height:</strong> {dummyDog.height}</p>
+          <p><strong>Weight:</strong> {dummyDog.weight}</p>
+        </div>
+      </span>
     </div>
   );
 }
