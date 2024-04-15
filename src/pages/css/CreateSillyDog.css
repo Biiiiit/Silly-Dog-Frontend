@@ -114,9 +114,14 @@
   text-align: start;
 }
 
+.page-text {
+  width: 100%;
+}
+
 .page-content {
   display: flex; /* Display children elements in a row */
   align-items: flex-start; /* Align items at the start of the cross axis */
   overflow: hidden;
   text-align: justify;
+  justify-content: space-between;
 }

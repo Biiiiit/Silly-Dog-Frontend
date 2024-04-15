@@ -267,7 +267,7 @@ const CreateDogPage = () => {
               </div>
             ) : (
               <div className="page-content">
-                <p dangerouslySetInnerHTML={createMarkup(pageContent)}></p>
+                <p className="page-text" dangerouslySetInnerHTML={createMarkup(pageContent)}></p>
                 <SillyDogDisplay /*dog={dogData}*/ />
               </div>
             )}
