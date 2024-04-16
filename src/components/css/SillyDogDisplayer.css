@@ -8,9 +8,10 @@
   border: 1px solid black;
   padding: 20px;
   border-radius: 10px;
-  position: absolute; /* Position the SillyDogDisplay relative to the text container */
-  top: 0; /* Adjust as needed */
-  right: 0; /* Adjust as needed */
+  float: right;
+  clear: right;
+  position: relative;
+  margin-left: 2%;
 }
 
   .display-inline-block {

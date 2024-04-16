@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ContentContainer from '../components/ContentContainer';
+import { AtomicBlockUtils } from 'draft-js';
 import { EditorState, RichUtils, Modifier, Entity, convertToRaw, convertFromRaw, convertFromHTML, ContentState } from 'draft-js';
 import { convertToHTML } from 'draft-convert';
+import ReactDOM from 'react-dom/client';
 import parse from 'html-react-parser';
 import DOMPurify from 'dompurify';
 import { Editor } from 'react-draft-wysiwyg';
@@ -16,6 +18,36 @@ const CreateDogPage = () => {
   const [showEditor, setShowEditor] = useState(false);
   const [pageContent, setPageContent] = useState('placeholder for text');
   const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
+
+  useEffect(() => {
+    // Function to append SillyDogDisplay component to the editor container
+    const appendSillyDogDisplayToEditor = () => {
+      // Find the editor container
+      const editorContainer = document.querySelector('[data-contents="true"]');
+      // Check if the editor container exists
+      if (editorContainer) {
+        // Create a root for rendering SillyDogDisplay component
+        const sillyDogDisplayRoot = document.createElement('div');
+        // Render SillyDogDisplay component to the root
+        const sillyDogDisplayRootInstance = ReactDOM.createRoot(sillyDogDisplayRoot);
+        sillyDogDisplayRootInstance.render(<SillyDogDisplay /*dog={dogData}*/ />);
+
+        // Check if the editor container already has children
+        if (editorContainer.firstChild) {
+          // Insert SillyDogDisplay as the first child of the editorContainer
+          editorContainer.insertBefore(sillyDogDisplayRoot, editorContainer.firstChild);
+        } else {
+          // If no children exist, simply append SillyDogDisplay to the editorContainer
+          editorContainer.appendChild(sillyDogDisplayRoot);
+        }
+      }
+    };
+
+    // Check if the editor is open and then append SillyDogDisplay component
+    if (showEditor) {
+      appendSillyDogDisplayToEditor();
+    }
+  }, [showEditor]); // Run this effect whenever showEditor changes  
 
   const toggleEditor = () => {
     setShowEditor(!showEditor);
@@ -44,12 +76,6 @@ const CreateDogPage = () => {
     }
   };
 
-  function createMarkup(html) {
-    return {
-      __html: DOMPurify.sanitize(html)
-    };
-  }
-
   const onSaveContent = () => {
     // Get the current content state
     const contentState = editorState.getCurrentContent();
@@ -58,7 +84,7 @@ const CreateDogPage = () => {
     let html = convertToHTML({
       entityToHTML: (entity, originalText) => {
         if (entity.type === 'LINK') {
-          return `<a href="${entity.data.url}" title="${entity.data.title}">${originalText}</a>`;
+          return `<a href="${entity.data.url}" title="${entity.data.title}" target="_blank">${originalText}</a>`;
         }
         return originalText;
       },
@@ -156,41 +182,21 @@ const CreateDogPage = () => {
   const handleAddLink = (url, title) => {
     // Get the current editor state
     let currentEditorState = editorState;
-
-    // Get the current content
-    const contentState = currentEditorState.getCurrentContent();
-
-    // Get the selection
-    const selectionState = currentEditorState.getSelection();
-
-    // Create a new content state with the URL as text
-    const contentStateWithLink = Modifier.insertText(
-      contentState,
-      selectionState,
-      url,
-      null,
-      Entity.create('LINK', 'MUTABLE', { url: url, title: title })
-    );
-
-    // Update the editor state with the new content
-    currentEditorState = EditorState.push(
+  
+    // Create a new entity for the link
+    const contentStateWithEntity = currentEditorState.getCurrentContent().createEntity('LINK', 'MUTABLE', { url, title });
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+  
+    // Insert the link entity as an atomic block at the current selection
+    const newEditorState = AtomicBlockUtils.insertAtomicBlock(
       currentEditorState,
-      contentStateWithLink,
-      'insert-characters'
+      entityKey,
+      url
     );
-
-    // Move the selection to the end of the inserted link
-    const newSelection = selectionState.merge({
-      anchorOffset: selectionState.getEndOffset(),
-      focusOffset: selectionState.getEndOffset(),
-    });
-
-    // Set the new editor state with the updated selection
-    currentEditorState = EditorState.forceSelection(currentEditorState, newSelection);
-
+  
     // Update the editor state
-    setEditorState(currentEditorState);
-
+    setEditorState(newEditorState);
+  
     // Close the custom link modal
     handleCloseModal();
   };
@@ -272,10 +278,8 @@ const CreateDogPage = () => {
               </div>
             ) : (
               <div className="page-content">
-                <section className='page-text-container'>
-                  {parse(pageContent)}
-                  <SillyDogDisplay /*dog={dogData}*/ />
-                </section>
+                <SillyDogDisplay /*dog={dogData}*/ />
+                <p>{parse(pageContent)}</p>
               </div>
             )}
           </section>
@@ -283,6 +287,6 @@ const CreateDogPage = () => {
       </div>
     </ContentContainer>
   );
-};
+}
 
 export default CreateDogPage;

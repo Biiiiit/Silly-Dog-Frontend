@@ -20,6 +20,22 @@ const CustomLinkModal = ({ onCancel, visible, onAddLink }) => {
     }
   }, [visible]);
 
+  const linkButtonWrapper = document.querySelector('.rdw-option-wrapper[title="Link"]');
+  if (linkButtonWrapper) {
+    const rect = linkButtonWrapper.getBoundingClientRect();
+    const editorContainer = document.querySelector('.editor-container'); // Assuming this is the container for the editor
+    if (editorContainer) {
+      const editorRect = editorContainer.getBoundingClientRect();
+      const top = rect.bottom - editorRect.top + 190;
+      const left = rect.left - editorRect.left - 40;
+      const customLinkModal = document.querySelector('.custom-link-modal'); // Assuming this is the class name of your custom link modal
+      if (customLinkModal) {
+        customLinkModal.style.top = `${top}px`;
+        customLinkModal.style.left = `${left}px`;
+      }
+    }
+  }
+
   const handleLinkTypeChange = (selectedType) => {
     if (selectedType !== linkType) {
       setLinkType(selectedType);
@@ -30,7 +46,7 @@ const CustomLinkModal = ({ onCancel, visible, onAddLink }) => {
     if (linkUrl.trim() !== '') {
       // Call the onAddLink function with the link URL
       onAddLink(linkUrl);
-  
+
       // Close custom modal
       onCancel();
     }
@@ -52,7 +68,7 @@ const CustomLinkModal = ({ onCancel, visible, onAddLink }) => {
     } else if (linkType === 'External Site') {
       return (
         <div className='inputLinkExternal'>
-          <FaExternalLinkAlt className="float-left"/>
+          <FaExternalLinkAlt className="float-left" />
           <input
             className='linkInputExternal'
             type="text"

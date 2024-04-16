@@ -22,7 +22,7 @@ const SillyDogDisplay = () => {
   };
 
   return (
-      <aside className="silly-dog-display">
+      <div className="silly-dog-display">
         <img src={dummyDog.image} alt="Dog" />
         <p><strong>Description:</strong> {dummyDog.description}</p>
         <p><strong>Status:</strong> {dummyDog.status}</p>
@@ -50,7 +50,7 @@ const SillyDogDisplay = () => {
           <p><strong>Height:</strong> {dummyDog.height}</p>
           <p><strong>Weight:</strong> {dummyDog.weight}</p>
         </div>
-      </aside>
+      </div>
   );
 }
 
