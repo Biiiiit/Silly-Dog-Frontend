@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import ContentContainer from '../components/ContentContainer';
 import { AtomicBlockUtils } from 'draft-js';
-import { EditorState, RichUtils, Modifier, Entity, convertToRaw, convertFromRaw, convertFromHTML, ContentState } from 'draft-js';
+import { EditorState, RichUtils, convertToRaw, convertFromRaw, convertFromHTML, ContentState } from 'draft-js';
 import { convertToHTML } from 'draft-convert';
 import ReactDOM from 'react-dom/client';
 import parse from 'html-react-parser';
-import DOMPurify from 'dompurify';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './css/CreateSillyDog.css';
@@ -18,6 +18,7 @@ const CreateDogPage = () => {
   const [showEditor, setShowEditor] = useState(false);
   const [pageContent, setPageContent] = useState('placeholder for text');
   const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
+  const { name } = useParams(); // Get the inputData from URL parameters
 
   useEffect(() => {
     // Function to append SillyDogDisplay component to the editor container
@@ -242,7 +243,7 @@ const CreateDogPage = () => {
         visible={showCustomLinkModal}
       />
       <header className="header-container">
-        <h1 className='name'>Name:</h1>
+        <h1 className='name'>{name}</h1>
         <div className="button-container">
           <button onClick={toggleEditor} className="edit-button">
             {showEditor ? 'Hide Editor' : 'Edit'}
