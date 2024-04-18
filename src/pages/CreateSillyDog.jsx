@@ -202,6 +202,9 @@ const CreateDogPage = () => {
     setShowCustomLinkModal(false);
   };
 
+  const onCloseEditor = () => {
+    setShowEditor(false);
+  };  
 
   const handleAddLink = (url, title) => {
     // Get the current editor state
@@ -310,7 +313,7 @@ const CreateDogPage = () => {
             )}
           </section>
           {showEditor && isDogInfoEmpty && (
-            <SillyDogEdit dogInfo={dogInfo} /> // Render the placeholder component if dogInfo is empty and editor is open
+            <SillyDogEdit dogInfo={dogInfo} onClose={onCloseEditor} />
           )}
         </div>
       </div>
