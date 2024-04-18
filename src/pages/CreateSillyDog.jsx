@@ -12,6 +12,7 @@ import './css/CreateSillyDog.css';
 import './css/Editor.css';
 import CustomLinkModal from '../components/CustomLinkModal';
 import SillyDogDisplay from '../components/SillyDogDisplayer';
+import SillyDogEdit from '../components/SillyDogEdit';
 
 const CreateDogPage = () => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
@@ -19,6 +20,27 @@ const CreateDogPage = () => {
   const [pageContent, setPageContent] = useState('placeholder for text');
   const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
   const { name } = useParams(); // Get the inputData from URL parameters
+  const dogInfo = {
+    image: '', // Empty image URL
+    name: name,
+    description: '', // Empty description
+    status: '', // Empty status
+    nationality: '', // Empty nationality
+    aliases: [], // Empty aliases array
+    relatives: [], // Empty relatives array
+    occupation: '', // Empty occupation
+    dateOfBirth: '', // Empty date of birth
+    placeOfBirth: '', // Empty place of birth
+    dateOfDeath: '', // Empty date of death
+    placeOfDeath: '', // Empty place of death
+    maritalStatus: '', // Empty marital status
+    gender: '', // Empty gender
+    height: '', // Empty height
+    weight: '' // Empty weight
+  };
+
+  // Check if all fields in dogInfo are empty
+  const isDogInfoEmpty = Object.values(dogInfo).some(value => value === '');
 
   useEffect(() => {
     // Function to append SillyDogDisplay component to the editor container
@@ -45,16 +67,17 @@ const CreateDogPage = () => {
     };
 
     // Check if the editor is open and then append SillyDogDisplay component
-    if (showEditor) {
+    if (showEditor && !isDogInfoEmpty) { // Only append if showEditor is true and dogInfo is not empty
       appendSillyDogDisplayToEditor();
     }
-  }, [showEditor]); // Run this effect whenever showEditor changes  
+  }, [showEditor, isDogInfoEmpty]); // Run this effect whenever showEditor or dogInfo changes  
 
   const toggleEditor = () => {
     setShowEditor(!showEditor);
 
     // Load page content into editor when toggling
     if (!showEditor) {
+      console.log('Editor opened, showEditor is now true');
       // Replace <br> tags with a unique marker
       const contentWithMarker = pageContent.replace(/<br\s*\/?>/gi, '[[BR]]');
 
@@ -183,21 +206,21 @@ const CreateDogPage = () => {
   const handleAddLink = (url, title) => {
     // Get the current editor state
     let currentEditorState = editorState;
-  
+
     // Create a new entity for the link
     const contentStateWithEntity = currentEditorState.getCurrentContent().createEntity('LINK', 'MUTABLE', { url, title });
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-  
+
     // Insert the link entity as an atomic block at the current selection
     const newEditorState = AtomicBlockUtils.insertAtomicBlock(
       currentEditorState,
       entityKey,
       url
     );
-  
+
     // Update the editor state
     setEditorState(newEditorState);
-  
+
     // Close the custom link modal
     handleCloseModal();
   };
@@ -278,12 +301,17 @@ const CreateDogPage = () => {
                 />
               </div>
             ) : (
-              <div className="page-content">
-                <SillyDogDisplay /*dog={dogData}*/ />
-                <p>{parse(pageContent)}</p>
+              <div>
+                <div className="page-content">
+                  {!isDogInfoEmpty && <SillyDogDisplay /*dog={dogData}*/ />}
+                  <p>{parse(pageContent)}</p>
+                </div>
               </div>
             )}
           </section>
+          {showEditor && isDogInfoEmpty && (
+            <SillyDogEdit dogInfo={dogInfo} /> // Render the placeholder component if dogInfo is empty and editor is open
+          )}
         </div>
       </div>
     </ContentContainer>

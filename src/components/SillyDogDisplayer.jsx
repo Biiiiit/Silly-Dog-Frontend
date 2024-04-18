@@ -23,7 +23,7 @@ const SillyDogDisplay = () => {
 
   return (
       <div className="silly-dog-display">
-        <img src={dummyDog.image} alt="Dog" />
+        <img className='display-image' src={dummyDog.image} alt="Dog" />
         <p><strong>Description:</strong> {dummyDog.description}</p>
         <p><strong>Status:</strong> {dummyDog.status}</p>
         <p><strong>Nationality:</strong> {dummyDog.nationality}</p>

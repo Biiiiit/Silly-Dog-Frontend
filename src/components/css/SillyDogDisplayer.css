@@ -14,32 +14,77 @@
   margin-left: 2%;
 }
 
-  .display-inline-block {
-    display: inline-block;
-  }
+.silly-dog-display-edit {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  position: fixed; /* Fixed position to stay on top of everything */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  z-index: 9999; /* Ensure it appears on top of other content */
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+  padding: 20px; /* Add padding for better appearance */
+}
 
-  .silly-dog-display img {
-    max-width: 100%;
-    max-height: 300px;
-    margin-bottom: 20px;
-  }
-  
-  .silly-dog-display h3 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-  }
-  
-  .silly-dog-display hr {
-    width: 100%;
-    margin: 20px 0;
-  }
-  
-  .silly-dog-display .bio-info,
-  .silly-dog-display .physical-description {
-    display: flex;
-  }
-  
-  .silly-dog-display .bio-info p,
-  .silly-dog-display .physical-description p {
-    margin-right: 20px;
-  }
+/* Add custom scrollbar to silly-dog-display-edit-content */
+.silly-dog-display-edit-content {
+  background-color: #006992;
+  height: 99.5%;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid black;
+  padding: 20px;
+  border-radius: 10px;
+  overflow-y: auto; /* Enable vertical scrolling */
+  scrollbar-width: thin; /* Custom scrollbar for Firefox */
+  scrollbar-color: #888888 #f0f0f0; /* Custom scrollbar color */
+}
+
+/* Define scrollbar styles for WebKit browsers */
+.silly-dog-display-edit-content::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+.silly-dog-display-edit-content::-webkit-scrollbar-track {
+  background: #f0f0f0; /* Background color of the scrollbar track */
+}
+
+.silly-dog-display-edit-content::-webkit-scrollbar-thumb {
+  background-color: #888888; /* Color of the scrollbar thumb */
+  border-radius: 4px; /* Rounded corners for the thumb */
+}
+
+.display-inline-block {
+  display: inline-block;
+}
+
+.display-image {
+  max-width: 100%;
+  max-height: 300px;
+  margin-bottom: 20px;
+}
+
+.silly-dog-display h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.silly-dog-display hr {
+  width: 100%;
+  margin: 20px 0;
+}
+
+.silly-dog-display .bio-info,
+.silly-dog-display .physical-description {
+  display: flex;
+}
+
+.silly-dog-display .bio-info p,
+.silly-dog-display .physical-description p {
+  margin-right: 20px;
+}
