@@ -13,6 +13,7 @@ import './css/Editor.css';
 import CustomLinkModal from '../components/CustomLinkModal';
 import SillyDogDisplay from '../components/SillyDogDisplayer';
 import SillyDogEdit from '../components/SillyDogEdit';
+import SillyDogImage from '../assets/SillyDoggy.png';
 
 const CreateDogPage = () => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
@@ -21,7 +22,7 @@ const CreateDogPage = () => {
   const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
   const { name } = useParams(); // Get the inputData from URL parameters
   const dogInfo = {
-    image: '', // Empty image URL
+    image: SillyDogImage, // Empty image URL
     name: name,
     description: '', // Empty description
     status: '', // Empty status
@@ -31,8 +32,6 @@ const CreateDogPage = () => {
     occupation: '', // Empty occupation
     dateOfBirth: '', // Empty date of birth
     placeOfBirth: '', // Empty place of birth
-    dateOfDeath: '', // Empty date of death
-    placeOfDeath: '', // Empty place of death
     maritalStatus: '', // Empty marital status
     gender: '', // Empty gender
     height: '', // Empty height
