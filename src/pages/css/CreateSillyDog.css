@@ -156,7 +156,7 @@
   color: white;
   cursor: pointer;
   border-radius: 5px;
-  width: 10%;
+  width: auto;
 }
 
 .edit-save-button:hover {

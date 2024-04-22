@@ -103,15 +103,16 @@
 
 .edit-image-container:hover .edit-overlay {
   opacity: 1;
+  cursor: pointer;
 }
 
 .edit-icon {
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 55%;
   transform: translate(-50%, -50%);
-  width: 50%;
-  height: 50%;
+  width: 30%;
+  height: 30%;
 }
 
 .silly-dog-display h3 {
