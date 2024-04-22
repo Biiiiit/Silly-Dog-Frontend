@@ -1,44 +1,122 @@
-import React, { useState, useEffect } from 'react';
-import ContentContainer from '../components/ContentContainer';
-import { EditorState, RichUtils, Modifier, Entity, convertToRaw, convertFromRaw, convertFromHTML, ContentState } from 'draft-js';
-import { convertToHTML } from 'draft-convert';
-import html2canvas from 'html2canvas';
-import DOMPurify from 'dompurify';
-import { Editor } from 'react-draft-wysiwyg';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import './css/CreateSillyDog.css';
-import './css/Editor.css';
-import CustomLinkModal from '../components/CustomLinkModal';
-import SillyDogDisplay from '../components/SillyDogDisplayer';
+import React, { useState, useEffect } from "react";
+import ContentContainer from "../components/ContentContainer";
+import {
+  EditorState,
+  RichUtils,
+  Modifier,
+  Entity,
+  convertToRaw,
+  convertFromRaw,
+  convertFromHTML,
+  ContentState,
+} from "draft-js";
+import { convertToHTML } from "draft-convert";
+import html2canvas from "html2canvas";
+import DOMPurify from "dompurify";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import "./css/CreateSillyDog.css";
+import "./css/Editor.css";
+import CustomLinkModal from "../components/CustomLinkModal";
+import SillyDogDisplay from "../components/SillyDogDisplayer";
+import SillyDogEdit from "../components/SillyDogEdit";
+import SillyDogImage from "../assets/SillyDoggy.png";
 
 const CreateDogPage = () => {
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty()
+  );
   const [showEditor, setShowEditor] = useState(false);
-  const [pageContent, setPageContent] = useState('placeholder for text');
+  const [pageContent, setPageContent] = useState("placeholder for text");
   const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
+  const { name } = useParams(); // Get the inputData from URL parameters
+  const dogInfo = {
+    image: SillyDogImage, // Empty image URL
+    name: name,
+    description: "", // Empty description
+    status: "", // Empty status
+    nationality: "", // Empty nationality
+    aliases: [], // Empty aliases array
+    relatives: [], // Empty relatives array
+    occupation: "", // Empty occupation
+    dateOfBirth: "", // Empty date of birth
+    placeOfBirth: "", // Empty place of birth
+    maritalStatus: "", // Empty marital status
+    gender: "", // Empty gender
+    height: "", // Empty height
+    weight: "", // Empty weight
+  };
+
+  // Check if all fields in dogInfo are empty
+  const isDogInfoEmpty = Object.values(dogInfo).some((value) => value === "");
+
+  useEffect(() => {
+    // Function to append SillyDogDisplay component to the editor container
+    const appendSillyDogDisplayToEditor = () => {
+      // Find the editor container
+      const editorContainer = document.querySelector('[data-contents="true"]');
+      // Check if the editor container exists
+      if (editorContainer) {
+        // Create a root for rendering SillyDogDisplay component
+        const sillyDogDisplayRoot = document.createElement("div");
+        // Render SillyDogDisplay component to the root
+        const sillyDogDisplayRootInstance =
+          ReactDOM.createRoot(sillyDogDisplayRoot);
+        sillyDogDisplayRootInstance.render(
+          <SillyDogDisplay /*dog={dogData}*/ />
+        );
+
+        // Check if the editor container already has children
+        if (editorContainer.firstChild) {
+          // Insert SillyDogDisplay as the first child of the editorContainer
+          editorContainer.insertBefore(
+            sillyDogDisplayRoot,
+            editorContainer.firstChild
+          );
+        } else {
+          // If no children exist, simply append SillyDogDisplay to the editorContainer
+          editorContainer.appendChild(sillyDogDisplayRoot);
+        }
+      }
+    };
+
+    // Check if the editor is open and then append SillyDogDisplay component
+    if (showEditor && !isDogInfoEmpty) {
+      // Only append if showEditor is true and dogInfo is not empty
+      appendSillyDogDisplayToEditor();
+    }
+  }, [showEditor, isDogInfoEmpty]); // Run this effect whenever showEditor or dogInfo changes
 
   const toggleEditor = () => {
     setShowEditor(!showEditor);
 
     // Load page content into editor when toggling
     if (!showEditor) {
+      console.log("Editor opened, showEditor is now true");
       // Replace <br> tags with a unique marker
-      const contentWithMarker = pageContent.replace(/<br\s*\/?>/gi, '[[BR]]');
+      const contentWithMarker = pageContent.replace(/<br\s*\/?>/gi, "[[BR]]");
 
       // Convert the modified HTML content to EditorState
       const blocksFromHTML = convertFromHTML(contentWithMarker);
-      const contentState = ContentState.createFromBlockArray(blocksFromHTML.contentBlocks, blocksFromHTML.entityMap);
+      const contentState = ContentState.createFromBlockArray(
+        blocksFromHTML.contentBlocks,
+        blocksFromHTML.entityMap
+      );
       const editorState = EditorState.createWithContent(contentState);
 
       // Replace the marker with a special character that represents a single empty line
       const currentContent = editorState.getCurrentContent();
       const rawContentState = convertToRaw(currentContent);
-      const updatedBlocks = rawContentState.blocks.map(block => ({
+      const updatedBlocks = rawContentState.blocks.map((block) => ({
         ...block,
-        text: block.text.replace(/\[\[BR\]\]/g, '\n') // Replace the marker with newline character
+        text: block.text.replace(/\[\[BR\]\]/g, "\n"), // Replace the marker with newline character
       }));
-      const updatedContentState = convertFromRaw({ ...rawContentState, blocks: updatedBlocks });
-      const updatedEditorState = EditorState.createWithContent(updatedContentState);
+      const updatedContentState = convertFromRaw({
+        ...rawContentState,
+        blocks: updatedBlocks,
+      });
+      const updatedEditorState =
+        EditorState.createWithContent(updatedContentState);
 
       setEditorState(updatedEditorState);
     }
@@ -46,7 +124,7 @@ const CreateDogPage = () => {
 
   function createMarkup(html) {
     return {
-      __html: DOMPurify.sanitize(html)
+      __html: DOMPurify.sanitize(html),
     };
   }
 
@@ -57,7 +135,7 @@ const CreateDogPage = () => {
     // Convert the content state to HTML with link entities properly converted
     let html = convertToHTML({
       entityToHTML: (entity, originalText) => {
-        if (entity.type === 'LINK') {
+        if (entity.type === "LINK") {
           return `<a href="${entity.data.url}" title="${entity.data.title}">${originalText}</a>`;
         }
         return originalText;
@@ -65,7 +143,7 @@ const CreateDogPage = () => {
     })(contentState);
 
     // Manipulate the HTML to handle empty blocks
-    html = html.replace(/<p><\/p>/g, '<br>');
+    html = html.replace(/<p><\/p>/g, "<br>");
 
     // Save the HTML content
     setPageContent(html);
@@ -82,17 +160,17 @@ const CreateDogPage = () => {
   }, [editorState]);
 
   useEffect(() => {
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
         // Check if a new .rdw-link-modal element is added to the DOM
         if (mutation.addedNodes) {
-          mutation.addedNodes.forEach(node => {
-            if (node.classList && node.classList.contains('rdw-link-modal')) {
+          mutation.addedNodes.forEach((node) => {
+            if (node.classList && node.classList.contains("rdw-link-modal")) {
               // Hide the default link modal
-              node.style.display = 'none';
+              node.style.display = "none";
 
               // Prevent the default modal from closing automatically
-              node.addEventListener('click', (e) => {
+              node.addEventListener("click", (e) => {
                 e.stopPropagation();
               });
             }
@@ -101,14 +179,15 @@ const CreateDogPage = () => {
       });
     });
 
-
     // Start observing mutations in the body element
     observer.observe(document.body, { childList: true, subtree: true });
 
     const tryToAddEventListener = () => {
-      const linkButtonWrapper = document.querySelector('.rdw-option-wrapper[title="Link"]');
+      const linkButtonWrapper = document.querySelector(
+        '.rdw-option-wrapper[title="Link"]'
+      );
       if (linkButtonWrapper) {
-        linkButtonWrapper.addEventListener('click', openCustomLinkModal);
+        linkButtonWrapper.addEventListener("click", openCustomLinkModal);
       } else {
         // Retry after a short delay if the element is not found
         setTimeout(tryToAddEventListener, 100);
@@ -120,17 +199,22 @@ const CreateDogPage = () => {
 
     return () => {
       // Clean up event listener when component unmounts
-      const linkButtonWrapper = document.querySelector('.rdw-option-wrapper[title="Link"]');
+      const linkButtonWrapper = document.querySelector(
+        '.rdw-option-wrapper[title="Link"]'
+      );
       if (linkButtonWrapper) {
-        linkButtonWrapper.removeEventListener('click', openCustomLinkModal);
+        linkButtonWrapper.removeEventListener("click", openCustomLinkModal);
       }
     };
   }, []);
 
   // Add event listener to the default link button wrapper outside of toggle functions
-  document.addEventListener('click', function (event) {
+  document.addEventListener("click", function (event) {
     // Check if the clicked element is the default link button
-    if (event.target.classList.contains('rdw-option-wrapper') && event.target.getAttribute('title') === 'Link') {
+    if (
+      event.target.classList.contains("rdw-option-wrapper") &&
+      event.target.getAttribute("title") === "Link"
+    ) {
       handleDefaultLinkButtonClick();
     }
   });
@@ -147,44 +231,29 @@ const CreateDogPage = () => {
     setShowCustomLinkModal(false);
   };
 
+  const onCloseEditor = () => {
+    setShowEditor(false);
+  };
 
   const handleAddLink = (url, title) => {
     // Get the current editor state
     let currentEditorState = editorState;
 
-    // Get the current content
-    const contentState = currentEditorState.getCurrentContent();
+    // Create a new entity for the link
+    const contentStateWithEntity = currentEditorState
+      .getCurrentContent()
+      .createEntity("LINK", "MUTABLE", { url, title });
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
 
-    // Get the selection
-    const selectionState = currentEditorState.getSelection();
-
-    // Create a new content state with the URL as text
-    const contentStateWithLink = Modifier.insertText(
-      contentState,
-      selectionState,
-      url,
-      null,
-      Entity.create('LINK', 'MUTABLE', { url: url, title: title })
-    );
-
-    // Update the editor state with the new content
-    currentEditorState = EditorState.push(
+    // Insert the link entity as an atomic block at the current selection
+    const newEditorState = AtomicBlockUtils.insertAtomicBlock(
       currentEditorState,
-      contentStateWithLink,
-      'insert-characters'
+      entityKey,
+      url
     );
-
-    // Move the selection to the end of the inserted link
-    const newSelection = selectionState.merge({
-      anchorOffset: selectionState.getEndOffset(),
-      focusOffset: selectionState.getEndOffset(),
-    });
-
-    // Set the new editor state with the updated selection
-    currentEditorState = EditorState.forceSelection(currentEditorState, newSelection);
 
     // Update the editor state
-    setEditorState(currentEditorState);
+    setEditorState(newEditorState);
 
     // Close the custom link modal
     handleCloseModal();
@@ -192,26 +261,41 @@ const CreateDogPage = () => {
 
   // Custom toolbar options
   const toolbarOptions = {
-    options: ['history', 'inline', 'blockType', 'list', 'textAlign', 'link', 'embedded'],
+    options: [
+      "history",
+      "inline",
+      "blockType",
+      "list",
+      "textAlign",
+      "link",
+      "embedded",
+    ],
     history: {
       inDropdown: false,
-      options: ['undo', 'redo'],
+      options: ["undo", "redo"],
     },
     blockType: {
       inDropdown: true,
-      options: ['Normal', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'Blockquote'],
+      options: ["Normal", "H1", "H2", "H3", "H4", "H5", "H6", "Blockquote"],
     },
     inline: {
       inDropdown: false,
-      options: ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript'],
+      options: [
+        "bold",
+        "italic",
+        "underline",
+        "strikethrough",
+        "superscript",
+        "subscript",
+      ],
     },
     list: {
       inDropdown: false,
-      options: ['unordered', 'ordered'],
+      options: ["unordered", "ordered"],
     },
     textAlign: {
       inDropdown: true,
-      options: ['left', 'center', 'right', 'justify'],
+      options: ["left", "center", "right", "justify"],
     },
     link: {
       inDropdown: false,
@@ -219,7 +303,7 @@ const CreateDogPage = () => {
     },
     embedded: {
       inDropdown: false,
-      options: ['link', 'image', 'video'],
+      options: ["link", "image", "video"],
     },
   };
 
@@ -231,17 +315,19 @@ const CreateDogPage = () => {
         visible={showCustomLinkModal}
       />
       <header className="header-container">
-        <h1 className='name'>Name:</h1>
+        <h1 className="name">Name:</h1>
         <div className="button-container">
           <button onClick={toggleEditor} className="edit-button">
-            {showEditor ? 'Hide Editor' : 'Edit'}
+            {showEditor ? "Hide Editor" : "Edit"}
           </button>
           {showEditor && (
-            <button onClick={onSaveContent} className="save-button">Save</button>
+            <button onClick={onSaveContent} className="save-button">
+              Save
+            </button>
           )}
         </div>
       </header>
-      <p className='align-left'>Created by username on date</p>
+      <p className="align-left">Created by username on date</p>
       <div className="editorpage-content">
         <div className="text-and-display-container">
           <section className="text-container">
@@ -256,26 +342,34 @@ const CreateDogPage = () => {
                   toolbarClassName="toolbar-class"
                   toolbar={toolbarOptions}
                   handleKeyCommand={(command, editorState) => {
-                    const newState = RichUtils.handleKeyCommand(editorState, command);
+                    const newState = RichUtils.handleKeyCommand(
+                      editorState,
+                      command
+                    );
                     if (newState) {
                       onEditorStateChange(newState);
-                      return 'handled';
+                      return "handled";
                     }
-                    return 'not-handled';
+                    return "not-handled";
                   }}
                 />
               </div>
             ) : (
-              <div className="page-content">
-                <p dangerouslySetInnerHTML={createMarkup(pageContent)}></p>
-                <SillyDogDisplay /*dog={dogData}*/ />
+              <div>
+                <div className="page-content">
+                  {!isDogInfoEmpty && <SillyDogDisplay /*dog={dogData}*/ />}
+                  <p>{parse(pageContent)}</p>
+                </div>
               </div>
             )}
           </section>
+          {showEditor && isDogInfoEmpty && (
+            <SillyDogEdit dogInfo={dogInfo} onClose={onCloseEditor} />
+          )}
         </div>
       </div>
     </ContentContainer>
-  );  
+  );
 };
 
 export default CreateDogPage;
