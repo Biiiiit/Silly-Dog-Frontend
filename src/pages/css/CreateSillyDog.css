@@ -21,12 +21,10 @@
 .toolbar-class {
   border: 1px solid #ccc;
 }
-
-.p {
+.p{
   flex-grow: 1;
   width: 100%;
 }
-
 .preview {
   padding: 1rem;
   margin-top: 1rem;
@@ -45,9 +43,7 @@
 .editorpage-content h1::after {
   content: "";
   display: block;
-  width: calc(
-    100% - 20px
-  ); /* Adjust as needed, subtracting the width of .silly-dog-display and its margin */
+  width: calc(100% - 20px); /* Adjust as needed, subtracting the width of .silly-dog-display and its margin */
   height: 2px;
   background-color: #0093ce;
   position: absolute;
@@ -64,7 +60,6 @@
   align-items: center;
   justify-content: space-between;
 }
-
 .button-container {
   display: flex;
 }
@@ -75,8 +70,7 @@
 
 .edit-button {
   padding: 8px 16px;
-  margin-right: 8px;
-  /* Add margin between the buttons */
+  margin-right: 8px; /* Add margin between the buttons */
   font-size: 16px;
   background-color: #007bff;
   color: #fff;
@@ -121,81 +115,8 @@
 }
 
 .page-content {
-  display: block;
-  text-align: start;
-  word-wrap: break-word;
-}
-
-.editor-container .editor-class {
-  flex: 1;
-  /* Take up remaining space */
-  margin-right: 20px;
-  /* Adjust margin as needed */
-}
-
-.editor-container .page-content {
-  flex: 0 0 auto;
-  /* Don't grow, don't shrink, maintain initial size */
-}
-
-.edit-buttons {
-  display: flex;
-  background-color: #006992;
-  justify-content: center;
-  margin: 2%;
-  width: 100%;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding: 1%;
-  border: 1px solid white;
-  border-radius: 10px;
-}
-
-.edit-close-button {
-  background-color: transparent;
-  color: white;
-  border: 1px solid #009ddb;
-  padding: 5px;
-  cursor: pointer;
-  border-radius: 5px;
-  width: 10%;
-  margin-right: auto;
-}
-
-.edit-close-button:hover {
-  background-color: #009ddb;
-}
-
-.edit-save-button {
-  background-color: transparent;
-  border: 1px solid #009ddb;
-  padding: 5px;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
-  width: 10%;
-}
-
-.edit-save-button:hover {
-  background-color: #009ddb;
-}
-
-.edit-input {
-  background-color: transparent;
-  color: white;
-  margin-bottom: 8%;
-  border-bottom: 1px solid white;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  outline: 0;
-  border-left: none;
-  border-right: none;
-  border-top: none;
-}
-
-.label {
-  margin: 0.5%;
-  width: 65%;
+  display: flex; /* Display children elements in a row */
+  align-items: flex-start; /* Align items at the start of the cross axis */
+  overflow: hidden;
+  text-align: justify;
 }
