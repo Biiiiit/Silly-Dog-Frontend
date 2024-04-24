@@ -6,6 +6,7 @@ import "./css/SillyDogDisplayer.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons"; // Import the edit icon
 import SillyDogManager from "../services/SillyDogManager";
+import SillyDoggy from "../assets/SillyDoggy.png";
 
 const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
   const [editedDogInfo, setEditedDogInfo] = useState(dogInfo);
@@ -26,35 +27,57 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
     for (let i = 0; i < media.length; i++) {
       const file = media[i];
       const fileType = file.type.split("/")[0];
-
-      let storageRef;
+  
+      // Check if the file type is one of the allowed image formats
       if (fileType === "image") {
-        storageRef = ref(imageUploader, `${v4()}`);
+        let storageRef = ref(imageUploader, `${v4()}`);
+        
+        try {
+          const uploadTask = await uploadBytes(storageRef, file);
+          const relativePath = storageRef.fullPath;
+  
+          mediaFiles.push({
+            locationReference: relativePath,
+            order: i + 1,
+          });
+        } catch (error) {
+          console.error("Error uploading file:", error);
+        }
       } else {
-        continue;
-      }
-
-      try {
-        const uploadTask = await uploadBytes(storageRef, file);
-        const relativePath = storageRef.fullPath;
-
-        mediaFiles.push({
-          locationReference: relativePath,
-          order: i + 1,
-        });
-      } catch (error) {
-        console.error("Error uploading file:", error);
+        console.error("Unsupported file type:", fileType);
       }
     }
-
-    editedDogInfo.media = mediaFiles;
-
+  
+    // Log the uploaded media files
+    console.log("Uploaded media files:", mediaFiles);
+  
+    // Update the editedDogInfo with the uploaded image path if available
+    const updatedDogInfo = {
+      ...editedDogInfo,
+      media: mediaFiles,
+    };
+  
+    // Log the updated editedDogInfo
+    console.log("Updated editedDogInfo:", updatedDogInfo);
+  
+    setEditedDogInfo(updatedDogInfo);
+  
+    // Ensure aliases, relatives, and affiliations are properly formatted
+    const formattedDogInfo = {
+      ...updatedDogInfo,
+      aliases: updatedDogInfo.aliases.split(",").map(alias => alias.trim()),
+      relatives: updatedDogInfo.relatives.split(",").map(relative => relative.trim()),
+      affiliations: updatedDogInfo.affiliations.split(",").map(affiliation => affiliation.trim())
+    };
+  
     try {
-      const newDog = await SillyDogManager.saveSillyDog(editedDogInfo);
+      console.log(formattedDogInfo);
+      const newDog = await SillyDogManager.saveSillyDog(formattedDogInfo);
+      onClose();
     } catch (error) {
       console.error("Error saving art piece:", error);
     }
-  };
+  };  
 
   const handleImageClick = () => {
     // Trigger file input click when the image is clicked
@@ -185,6 +208,24 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
           />
         </label>
         <label className="label">
+          Affiliations:
+          <br></br>
+          <span className="input-description">
+            Characters connection by affiliation i.e. friendship<br></br>
+            These don't need to be real affiliations, this is for a bit of
+            fun.<br></br>
+            Can be existing Silly Dogs.<br></br>
+            Type them with a comma in between: "john, alice".
+          </span>
+          <input
+            className="edit-input"
+            type="text"
+            name="affiliations"
+            value={editedDogInfo.affiliations || ""}
+            onChange={handleInputChange}
+          />
+        </label>
+        <label className="label">
           Occupation:
           <br></br>
           <span className="input-description">
@@ -288,8 +329,8 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
           Weight:
           <br></br>
           <span className="input-description">
-            Width of the dog measured in hamburgers.<br></br>1 hamburger is 11.4
-            centimetres (4.5 inches) wide, so calculate accordingly.<br></br>
+            Weight of the dog measured in hamburgers.<br></br>1 hamburger is 11.3
+            kilograms (0.25 pounds aka a quarter pounder), so calculate accordingly.<br></br>
             Example: "8 hamburgers".
           </span>
           <input

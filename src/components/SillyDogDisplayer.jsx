@@ -2,14 +2,16 @@ import React from 'react';
 import './css/SillyDogDisplayer.css';
 import SillyDoggy from '../assets/SillyDoggy.png'
 
-const SillyDogDisplay = () => {
-  const dummyDog = {
+const SillyDogDisplay = ({ dogInfo }) => {
+  const dummyDog = dogInfo || {
     image: SillyDoggy, // Dummy image URL
+    media: [],
     description: 'This is a silly dog.', // Dummy description
     status: 'Happy', // Dummy status
     nationality: 'Dogland', // Dummy nationality
     aliases: ['Fluffy', 'Paws'], // Dummy aliases array
     relatives: ['Buddy', 'Rover'], // Dummy relatives array
+    affiliations: ['Snoopy'],
     occupation: 'Professional Tail Wagger', // Dummy occupation
     dateOfBirth: 'April 1, 2015', // Dummy date of birth
     placeOfBirth: 'Dogville', // Dummy place of birth
@@ -23,13 +25,14 @@ const SillyDogDisplay = () => {
 
   return (
       <div className="silly-dog-display">
-        <img className='display-image' src={dummyDog.image} alt="Dog" />
+        <img className='display-image' src={dummyDog.media} alt="Dog" />
         <p><strong>Description:</strong> {dummyDog.description}</p>
         <p><strong>Status:</strong> {dummyDog.status}</p>
         <p><strong>Nationality:</strong> {dummyDog.nationality}</p>
         <div className="aliases-relatives">
-          <p><strong>Aliases:</strong> {dummyDog.aliases.join(', ')}</p>
-          <p><strong>Relatives:</strong> {dummyDog.relatives.join(', ')}</p>
+          <p><strong>Aliases:</strong> {dummyDog.aliases}</p>
+          <p><strong>Relatives:</strong> {dummyDog.relatives}</p>
+          <p><strong>Affiliations:</strong> {dummyDog.affiliations}</p>
         </div>
         <p><strong>Occupation:</strong> {dummyDog.occupation}</p>
         <hr />
@@ -37,10 +40,6 @@ const SillyDogDisplay = () => {
         <div className="bio-info">
           <p><strong>Date of Birth:</strong> {dummyDog.dateOfBirth}</p>
           <p><strong>Place of Birth:</strong> {dummyDog.placeOfBirth}</p>
-        </div>
-        <div className="bio-info">
-          <p><strong>Date of Death:</strong> {dummyDog.dateOfDeath}</p>
-          <p><strong>Place of Death:</strong> {dummyDog.placeOfDeath}</p>
         </div>
         <p><strong>Marital Status:</strong> {dummyDog.maritalStatus}</p>
         <hr />

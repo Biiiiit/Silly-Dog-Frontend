@@ -21,6 +21,7 @@ import CustomLinkModal from "../components/CustomLinkModal";
 import SillyDogDisplay from "../components/SillyDogDisplayer";
 import SillyDogEdit from "../components/SillyDogEdit";
 import SillyDogImage from "../assets/SillyDoggy.png";
+import SillyDogManager from "../services/SillyDogManager";
 
 const CreateDogPage = () => {
   const [editorState, setEditorState] = useState(() =>
@@ -29,8 +30,11 @@ const CreateDogPage = () => {
   const [showEditor, setShowEditor] = useState(false);
   const [pageContent, setPageContent] = useState("placeholder for text");
   const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
+  const [dogInfo, setDogInfo] = useState({}); // Initialize dogInfo state
+  const [isDogInfoEmpty, setIsDogInfoEmpty] = useState(true); // Initialize isDogInfoEmpty state
   const { name } = useParams(); // Get the inputData from URL parameters
-  const dogInfo = {
+
+  const defaultDogInfo = {
     image: SillyDogImage, // Empty image URL
     name: name,
     description: "", // Empty description
@@ -38,6 +42,7 @@ const CreateDogPage = () => {
     nationality: "", // Empty nationality
     aliases: [], // Empty aliases array
     relatives: [], // Empty relatives array
+    affiliations: [],
     occupation: "", // Empty occupation
     dateOfBirth: "", // Empty date of birth
     placeOfBirth: "", // Empty place of birth
@@ -48,8 +53,30 @@ const CreateDogPage = () => {
     media: [],
   };
 
-  // Check if all fields in dogInfo are empty
-  const isDogInfoEmpty = Object.values(dogInfo).some((value) => value === "");
+  useEffect(() => {
+    // Fetch dog info when component mounts or name changes
+    SillyDogManager.getSillyDog(name)
+      .then((fetchedDogInfo) => {
+        const dogData = fetchedDogInfo || defaultDogInfo;
+        console.log("Dog Info:", dogData);
+        const isEmpty = Object.values(dogData).some((value) => value === "");
+        console.log("Is dog info empty?", isEmpty);
+        // Update the dogInfo state and isDogInfoEmpty state here
+        setDogInfo(dogData);
+        setIsDogInfoEmpty(isEmpty);
+      })
+      .catch((error) => {
+        console.error("Error fetching dog info:", error);
+        // Handle error if necessary
+        // Set dogInfo to default if there's an error
+        setDogInfo(defaultDogInfo);
+        // Set isDogInfoEmpty to true if there's an error
+        setIsDogInfoEmpty(true);
+      });
+  }, [name]); // Fetch dog info whenever name changes
+
+  // Log the dogInfo object
+  console.log("Dog Info:", dogInfo);
 
   useEffect(() => {
     // Function to append SillyDogDisplay component to the editor container
@@ -357,7 +384,7 @@ const CreateDogPage = () => {
             ) : (
               <div>
                 <div className="page-content">
-                  {!isDogInfoEmpty && <SillyDogDisplay /*dog={dogData}*/ />}
+                  {!isDogInfoEmpty && dogInfo && <SillyDogDisplay dogInfo={dogInfo} />}
                   <p>{parse(pageContent)}</p>
                 </div>
               </div>
