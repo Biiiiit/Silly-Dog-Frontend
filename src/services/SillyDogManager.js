@@ -3,8 +3,21 @@ import axios from "axios";
 const url = "http://localhost:8080/sillyDogs";
 
 // Get one
-const getSillyDog = async (id) => {
-  return await axios.get(`${url}/${id}`).then((response) => response.data);
+const getSillyDog = async (name) => {
+  try {
+    const response = await axios.get(`${url}/${name}`);
+    // Check if response contains data
+    if (response.data) {
+      return response.data;
+    } else {
+      // Return an empty object if response data is empty
+      return {};
+    }
+  } catch (error) {
+    // Handle errors by returning null
+    console.error("Error fetching dog info:", error);
+    return null;
+  }
 };
 
 // Get all
