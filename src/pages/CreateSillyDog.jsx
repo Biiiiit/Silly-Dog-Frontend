@@ -91,7 +91,7 @@ const CreateDogPage = () => {
         const sillyDogDisplayRootInstance =
           ReactDOM.createRoot(sillyDogDisplayRoot);
         sillyDogDisplayRootInstance.render(
-          <SillyDogDisplay /*dog={dogData}*/ />
+          <SillyDogDisplay dogInfo={dogInfo} />
         );
 
         // Check if the editor container already has children
