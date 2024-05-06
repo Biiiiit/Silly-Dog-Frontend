@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { imageUploader } from "../services/Firebase";
 import { v4 } from "uuid";
-import { ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import "./css/SillyDogDisplayer.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons"; // Import the edit icon
@@ -27,15 +27,15 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
     for (let i = 0; i < media.length; i++) {
       const file = media[i];
       const fileType = file.type.split("/")[0];
-  
+
       // Check if the file type is one of the allowed image formats
       if (fileType === "image") {
         let storageRef = ref(imageUploader, `${v4()}`);
-        
+
         try {
           const uploadTask = await uploadBytes(storageRef, file);
           const relativePath = storageRef.fullPath;
-  
+
           mediaFiles.push({
             locationReference: relativePath,
             order: i + 1,
@@ -47,29 +47,33 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
         console.error("Unsupported file type:", fileType);
       }
     }
-  
+
     // Log the uploaded media files
     console.log("Uploaded media files:", mediaFiles);
-  
+
     // Update the editedDogInfo with the uploaded image path if available
     const updatedDogInfo = {
       ...editedDogInfo,
       media: mediaFiles,
     };
-  
+
     // Log the updated editedDogInfo
     console.log("Updated editedDogInfo:", updatedDogInfo);
-  
+
     setEditedDogInfo(updatedDogInfo);
-  
+
     // Ensure aliases, relatives, and affiliations are properly formatted
     const formattedDogInfo = {
       ...updatedDogInfo,
-      aliases: updatedDogInfo.aliases.split(",").map(alias => alias.trim()),
-      relatives: updatedDogInfo.relatives.split(",").map(relative => relative.trim()),
-      affiliations: updatedDogInfo.affiliations.split(",").map(affiliation => affiliation.trim())
+      aliases: updatedDogInfo.aliases.split(",").map((alias) => alias.trim()),
+      relatives: updatedDogInfo.relatives
+        .split(",")
+        .map((relative) => relative.trim()),
+      affiliations: updatedDogInfo.affiliations
+        .split(",")
+        .map((affiliation) => affiliation.trim()),
     };
-  
+
     try {
       console.log(formattedDogInfo);
       const newDog = await SillyDogManager.saveSillyDog(formattedDogInfo);
@@ -77,7 +81,7 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
     } catch (error) {
       console.error("Error saving art piece:", error);
     }
-  };  
+  };
 
   const handleImageClick = () => {
     // Trigger file input click when the image is clicked
@@ -101,6 +105,19 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
     }
   }, [media]);
 
+  const [imageUrl, setImageUrl] = useState("");
+
+  useEffect(() => {
+    async function getURL() {
+      setImageUrl(
+        await getDownloadURL(
+          ref(imageUploader, dogInfo.media[0].locationReference)
+        )
+      );
+    }
+    getURL();
+  }, [dogInfo]);
+
   return (
     <div className="silly-dog-display-edit">
       <div className="silly-dog-display-edit-content">
@@ -115,7 +132,7 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
         <label className="edit-image-container" htmlFor="fileInput">
           <img
             className="edit-display-image"
-            src={editedDogInfo.image || SillyDoggy}
+            src={imageUrl || SillyDoggy}
             alt="Dog"
           />
           <div className="edit-overlay">
@@ -212,8 +229,8 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
           <br></br>
           <span className="input-description">
             Characters connection by affiliation i.e. friendship<br></br>
-            These don't need to be real affiliations, this is for a bit of
-            fun.<br></br>
+            These don't need to be real affiliations, this is for a bit of fun.
+            <br></br>
             Can be existing Silly Dogs.<br></br>
             Type them with a comma in between: "john, alice".
           </span>
@@ -329,8 +346,9 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
           Weight:
           <br></br>
           <span className="input-description">
-            Weight of the dog measured in hamburgers.<br></br>1 hamburger is 11.3
-            kilograms (0.25 pounds aka a quarter pounder), so calculate accordingly.<br></br>
+            Weight of the dog measured in hamburgers.<br></br>1 hamburger is
+            11.3 kilograms (0.25 pounds aka a quarter pounder), so calculate
+            accordingly.<br></br>
             Example: "8 hamburgers".
           </span>
           <input

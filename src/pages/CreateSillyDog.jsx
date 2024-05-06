@@ -54,8 +54,9 @@ const CreateDogPage = () => {
   };
 
   useEffect(() => {
+    let nameDecoded = decodeURIComponent(name.replace(/\+/g, " "));
     // Fetch dog info when component mounts or name changes
-    SillyDogManager.getSillyDog(name)
+    SillyDogManager.getSillyDog(nameDecoded)
       .then((fetchedDogInfo) => {
         const dogData = fetchedDogInfo || defaultDogInfo;
         console.log("Dog Info:", dogData);
@@ -384,7 +385,9 @@ const CreateDogPage = () => {
             ) : (
               <div>
                 <div className="page-content">
-                  {!isDogInfoEmpty && dogInfo && <SillyDogDisplay dogInfo={dogInfo} />}
+                  {!isDogInfoEmpty && dogInfo && (
+                    <SillyDogDisplay dogInfo={dogInfo} />
+                  )}
                   <p>{parse(pageContent)}</p>
                 </div>
               </div>
