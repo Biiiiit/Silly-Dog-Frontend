@@ -4,7 +4,17 @@ import SillyDoggy from "../assets/SillyDoggy.png";
 import { getDownloadURL, ref } from "firebase/storage";
 import { imageUploader } from "../services/Firebase";
 
-const SillyDogDisplay = ({ dogInfo }) => {
+const SillyDogDisplay = ({ dogInfo, onClick }) => {
+  console.log("onClick prop in SillyDogDisplay:", onClick);
+  const handleDisplayClick = (e) => {
+    e.stopPropagation(); // Prevent event from bubbling up to parent elements
+    console.log("cliiiiicked");
+    // Call the onClick function passed from the parent component
+    if (onClick) {
+      onClick();
+    }
+  };
+  
   const dummyDog = dogInfo || {
     image: SillyDoggy, // Dummy image URL
     media: [],
@@ -39,7 +49,7 @@ const SillyDogDisplay = ({ dogInfo }) => {
   }, [dogInfo]);
 
   return (
-    <div className="silly-dog-display pe-none">
+    <div className="silly-dog-display" onClick={handleDisplayClick}>
       <img className="display-image" src={imageUrl} alt="Dog" />
       <p>
         <strong>Description:</strong> {dummyDog.description}

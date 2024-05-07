@@ -4,6 +4,7 @@ import "./css/HomePage.css";
 import ContentContainer from "../components/ContentContainer";
 import DogImage from "../assets/SillyDoggy.png";
 import createDogImage from "../assets/createSillyDog.png";
+import SillyDogManager from "../services/SillyDogManager";
 
 const HomePage = () => {
   const [inputValue, setInputValue] = useState("");
@@ -13,9 +14,25 @@ const HomePage = () => {
     setInputValue(event.target.value);
   };
 
-  const handleNextButtonClick = () => {
-    // Navigate to CreateSillyDog page with input value appended to the URL
-    navigate(`/CreateSillyDog/${inputValue}`);
+  const handleNextButtonClick = async () => {
+    try {
+      // Save the silly dog
+      const savedDog = await SillyDogManager.saveSillyDog(inputValue);
+      
+      // Check if the savedDog object contains data
+      if (savedDog) {
+        // Extract the name from the saved dog object
+        const { name } = savedDog;
+        // Navigate to CreateSillyDog page with the name appended to the URL
+        navigate(`/CreateSillyDog/${name}`);
+      } else {
+        // Handle the case where savedDog is empty
+        console.error("Error saving silly dog: No data returned");
+      }
+    } catch (error) {
+      // Handle errors
+      console.error("Error saving silly dog:", error);
+    }
   };
 
   return (

@@ -32,6 +32,7 @@ const CreateDogPage = () => {
   const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
   const [dogInfo, setDogInfo] = useState({}); // Initialize dogInfo state
   const [isDogInfoEmpty, setIsDogInfoEmpty] = useState(true); // Initialize isDogInfoEmpty state
+  const [showEditModal, setShowEditModal] = useState(false);
   const { name } = useParams(); // Get the inputData from URL parameters
 
   const defaultDogInfo = {
@@ -52,6 +53,33 @@ const CreateDogPage = () => {
     weight: "", // Empty weight
     media: [],
   };
+
+  const handleSillyDogDisplayClick = () => {
+    // Open SillyDogEdit modal when SillyDogDisplay is clicked
+    console.log(showEditModal);
+    setShowEditModal(true);
+  };
+
+  useEffect(() => {
+    const editorContainer = document.querySelector('.DraftEditor-root');
+    const handleDocumentClick = (event) => {
+      let target = event.target;
+      // Traverse up the DOM tree until we find a div with class "silly-dog-display" or reach the editor container
+      while (target && !target.classList.contains('silly-dog-display') && target !== editorContainer) {
+        target = target.parentElement;
+      }
+      // If a div with class "silly-dog-display" is found, trigger its click event
+      if (target && target.classList.contains('silly-dog-display')) {
+        handleSillyDogDisplayClick();
+      }
+    };
+    // Attach the event listener to the document
+    document.addEventListener('click', handleDocumentClick);
+    // Cleanup the event listener on component unmount
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, [handleSillyDogDisplayClick]); // Run this effect whenever handleSillyDogDisplayClick changes
 
   useEffect(() => {
     let nameDecoded = decodeURIComponent(name.replace(/\+/g, " "));
@@ -76,9 +104,6 @@ const CreateDogPage = () => {
       });
   }, [name]); // Fetch dog info whenever name changes
 
-  // Log the dogInfo object
-  console.log("Dog Info:", dogInfo);
-
   useEffect(() => {
     // Function to append SillyDogDisplay component to the editor container
     const appendSillyDogDisplayToEditor = () => {
@@ -92,7 +117,7 @@ const CreateDogPage = () => {
         const sillyDogDisplayRootInstance =
           ReactDOM.createRoot(sillyDogDisplayRoot);
         sillyDogDisplayRootInstance.render(
-          <SillyDogDisplay dogInfo={dogInfo} />
+          <SillyDogDisplay dogInfo={dogInfo} onClick={handleSillyDogDisplayClick} />
         );
 
         // Check if the editor container already has children
@@ -106,6 +131,9 @@ const CreateDogPage = () => {
           // If no children exist, simply append SillyDogDisplay to the editorContainer
           editorContainer.appendChild(sillyDogDisplayRoot);
         }
+
+        // Add event listener to the SillyDogDisplay component
+        sillyDogDisplayRoot.addEventListener("click", handleSillyDogDisplayClick);
       }
     };
 
@@ -114,7 +142,18 @@ const CreateDogPage = () => {
       // Only append if showEditor is true and dogInfo is not empty
       appendSillyDogDisplayToEditor();
     }
-  }, [showEditor, isDogInfoEmpty]); // Run this effect whenever showEditor or dogInfo changes
+
+    // Clean up event listener when component unmounts or when dependencies change
+    return () => {
+      const editorContainer = document.querySelector('[data-contents="true"]');
+      if (editorContainer) {
+        const sillyDogDisplayRoot = editorContainer.firstChild;
+        if (sillyDogDisplayRoot) {
+          sillyDogDisplayRoot.removeEventListener("click", handleSillyDogDisplayClick);
+        }
+      }
+    };
+  }, [showEditor, isDogInfoEmpty, dogInfo]); // Run this effect whenever showEditor, isDogInfoEmpty, or dogInfo changes
 
   const toggleEditor = () => {
     setShowEditor(!showEditor);
@@ -393,9 +432,9 @@ const CreateDogPage = () => {
               </div>
             )}
           </section>
-          {showEditor && isDogInfoEmpty && (
-            <SillyDogEdit dogInfo={dogInfo} onClose={onCloseEditor} />
-          )}
+          {(showEditor && isDogInfoEmpty) || showEditModal ? (
+            <SillyDogEdit dogInfo={dogInfo} onClose={() => setShowEditModal(false)} />
+          ) : null}
         </div>
       </div>
     </ContentContainer>

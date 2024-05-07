@@ -13,6 +13,40 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
   const modalRef = useRef();
   const fileInputRef = useRef(null);
   const [media, setMedia] = useState([]);
+  const [imageUrl, setImageUrl] = useState("");
+
+  useEffect(() => {
+    if (dogInfo && dogInfo.media && dogInfo.media[0]) {
+      const fetchImageUrl = async () => {
+        setImageUrl(
+          await getDownloadURL(
+            ref(imageUploader, dogInfo.media[0].locationReference)
+          )
+        );
+      };
+      fetchImageUrl();
+    } else {
+      setImageUrl(SillyDoggy);
+    }
+  }, [dogInfo]);
+
+  useEffect(() => {
+    if (media && media[0]) {
+      const file = media[0];
+      const reader = new FileReader();
+
+      reader.onload = async (event) => {
+        const imageUrl = event.target.result;
+        setEditedDogInfo((prevState) => ({
+          ...prevState,
+          image: imageUrl,
+        }));
+        setImageUrl(imageUrl); // Update imageUrl state with the new image URL
+      };
+
+      reader.readAsDataURL(file);
+    }
+  }, [media]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,12 +62,11 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
       const file = media[i];
       const fileType = file.type.split("/")[0];
 
-      // Check if the file type is one of the allowed image formats
       if (fileType === "image") {
         let storageRef = ref(imageUploader, `${v4()}`);
 
         try {
-          const uploadTask = await uploadBytes(storageRef, file);
+          await uploadBytes(storageRef, file);
           const relativePath = storageRef.fullPath;
 
           mediaFiles.push({
@@ -48,75 +81,31 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
       }
     }
 
-    // Log the uploaded media files
-    console.log("Uploaded media files:", mediaFiles);
-
-    // Update the editedDogInfo with the uploaded image path if available
     const updatedDogInfo = {
       ...editedDogInfo,
       media: mediaFiles,
     };
 
-    // Log the updated editedDogInfo
-    console.log("Updated editedDogInfo:", updatedDogInfo);
-
     setEditedDogInfo(updatedDogInfo);
 
-    // Ensure aliases, relatives, and affiliations are properly formatted
-    const formattedDogInfo = {
-      ...updatedDogInfo,
-      aliases: updatedDogInfo.aliases.split(",").map((alias) => alias.trim()),
-      relatives: updatedDogInfo.relatives
-        .split(",")
-        .map((relative) => relative.trim()),
-      affiliations: updatedDogInfo.affiliations
-        .split(",")
-        .map((affiliation) => affiliation.trim()),
-    };
-
     try {
-      console.log(formattedDogInfo);
-      const newDog = await SillyDogManager.saveSillyDog(formattedDogInfo);
-      onClose();
+      // Check if the dog has an ID before updating
+      if (editedDogInfo.id) {
+        console.log(editedDogInfo.id);
+        // Call the updateSillyDog method with the edited dog info
+        await SillyDogManager.updateSillyDog(editedDogInfo.id, editedDogInfo);
+        onClose();
+      } else {
+        console.error("Error saving art piece: Dog ID not found");
+      }
     } catch (error) {
       console.error("Error saving art piece:", error);
     }
   };
 
   const handleImageClick = () => {
-    // Trigger file input click when the image is clicked
     fileInputRef.current.click();
   };
-
-  useEffect(() => {
-    if (media && media[0]) {
-      // Handle image change when a new image is selected
-      const file = media[0];
-      const reader = new FileReader();
-
-      reader.onload = (event) => {
-        setEditedDogInfo((prevState) => ({
-          ...prevState,
-          image: event.target.result, // Set image to base64 string
-        }));
-      };
-
-      reader.readAsDataURL(file);
-    }
-  }, [media]);
-
-  const [imageUrl, setImageUrl] = useState("");
-
-  useEffect(() => {
-    async function getURL() {
-      setImageUrl(
-        await getDownloadURL(
-          ref(imageUploader, dogInfo.media[0].locationReference)
-        )
-      );
-    }
-    getURL();
-  }, [dogInfo]);
 
   return (
     <div className="silly-dog-display-edit">
@@ -134,6 +123,7 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
             className="edit-display-image"
             src={imageUrl || SillyDoggy}
             alt="Dog"
+            onClick={handleImageClick} // Moved onClick to the image element
           />
           <div className="edit-overlay">
             <FontAwesomeIcon icon={faEdit} className="edit-icon" />
@@ -142,14 +132,14 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
         <input
           id="fileInput"
           type="file"
-          //   ref={fileInputRef}
+          ref={fileInputRef}
           style={{ display: "none" }}
           accept="image/*"
           onChange={(e) => setMedia(e.target.files)}
         />
         <label className="label">
           Image Caption:
-          <br></br>
+          <br />
           <span className="input-description">
             A small text to caption the image: "Wot 'n tarnation"
           </span>

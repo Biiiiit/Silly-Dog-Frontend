@@ -12,6 +12,7 @@
   clear: right;
   position: relative;
   margin-left: 2%;
+  z-index: 100;
 }
 
 .silly-dog-display-edit {

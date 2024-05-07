@@ -35,9 +35,15 @@ const deleteSillyDog = async (id) => {
   return await axios.delete(`${url}/${id}`);
 };
 
+// Update
+const updateSillyDog = async (id, updatedDogInfo) => {
+  return await axios.put(`${url}/${id}`, updatedDogInfo).then((response) => response.data);
+};
+
 export default {
   getSillyDog,
   getManySillyDogs,
   saveSillyDog,
   deleteSillyDog,
+  updateSillyDog,
 };
