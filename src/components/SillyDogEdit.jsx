@@ -8,7 +8,7 @@ import { faEdit } from "@fortawesome/free-solid-svg-icons"; // Import the edit i
 import SillyDogManager from "../services/SillyDogManager";
 import SillyDoggy from "../assets/SillyDoggy.png";
 
-const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
+const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
   const [editedDogInfo, setEditedDogInfo] = useState(dogInfo);
   const modalRef = useRef();
   const fileInputRef = useRef(null);
@@ -57,51 +57,90 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
   };
 
   const handleSave = async () => {
-    const mediaFiles = [];
-    for (let i = 0; i < media.length; i++) {
-      const file = media[i];
-      const fileType = file.type.split("/")[0];
-
-      if (fileType === "image") {
-        let storageRef = ref(imageUploader, `${v4()}`);
-
-        try {
-          await uploadBytes(storageRef, file);
-          const relativePath = storageRef.fullPath;
-
-          mediaFiles.push({
-            locationReference: relativePath,
-            order: i + 1,
-          });
-        } catch (error) {
-          console.error("Error uploading file:", error);
-        }
-      } else {
-        console.error("Unsupported file type:", fileType);
-      }
-    }
-
-    const updatedDogInfo = {
-      ...editedDogInfo,
-      media: mediaFiles,
-    };
-
-    setEditedDogInfo(updatedDogInfo);
-
     try {
       // Check if the dog has an ID before updating
-      if (editedDogInfo.id) {
-        console.log(editedDogInfo.id);
-        // Call the updateSillyDog method with the edited dog info
-        await SillyDogManager.updateSillyDog(editedDogInfo.id, editedDogInfo);
-        onClose();
-      } else {
+      if (!editedDogInfo.id) {
         console.error("Error saving art piece: Dog ID not found");
+        return;
       }
+  
+      console.log("Original editedDogInfo:", editedDogInfo);
+  
+      const mediaFiles = [];
+      for (let i = 0; i < media.length; i++) {
+        const file = media[i];
+        const fileType = file.type.split("/")[0];
+  
+        if (fileType === "image") {
+          // Use the current location reference for updating
+          const currentLocationReference = editedDogInfo.media[i]?.locationReference;
+          
+          if (!currentLocationReference) {
+            console.error("Error: Location reference not found for media item", i);
+            continue;
+          }
+  
+          mediaFiles.push({
+            locationReference: currentLocationReference,
+            order: i + 1,
+          });
+  
+          // Upload the new image file if available
+          if (file) {
+            let storageRef = ref(imageUploader, currentLocationReference);
+            try {
+              await uploadBytes(storageRef, file);
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
+          }
+        } else {
+          console.error("Unsupported file type:", fileType);
+        }
+      }
+  
+      console.log("Media files:", mediaFiles);
+  
+      const convertToArray = (value) => {
+        if (Array.isArray(value)) {
+          return value;
+        } else if (typeof value === "string") {
+          return value.split(",").map(item => item.trim());
+        } else {
+          return [];
+        }
+      };
+
+      const updatedDogInfo = {
+        id: editedDogInfo.id,
+        name: editedDogInfo.name,
+        description: editedDogInfo.description,
+        status: editedDogInfo.status,
+        nationality: editedDogInfo.nationality,
+        aliases: convertToArray(editedDogInfo.aliases),
+        relatives: convertToArray(editedDogInfo.relatives),
+        affiliation: convertToArray(editedDogInfo.affiliation),
+        occupation: editedDogInfo.occupation,
+        dateOfBirth: editedDogInfo.dateOfBirth,
+        placeOfBirth: editedDogInfo.placeOfBirth,
+        maritalStatus: editedDogInfo.maritalStatus,
+        gender: editedDogInfo.gender,
+        height: editedDogInfo.height,
+        weight: editedDogInfo.weight,
+        media: mediaFiles,
+      };
+  
+      console.log("Updated dog info:", updatedDogInfo);
+  
+      // Call the updateSillyDog method with the updated dog info
+      await SillyDogManager.updateSillyDog(updatedDogInfo.id, updatedDogInfo);
+      onUpdateDogInfo(editedDogInfo);
+
+      onClose();
     } catch (error) {
       console.error("Error saving art piece:", error);
     }
-  };
+  };  
 
   const handleImageClick = () => {
     fileInputRef.current.click();
@@ -192,7 +231,7 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
             className="edit-input"
             type="text"
             name="aliases"
-            value={editedDogInfo.aliases || ""}
+            value={editedDogInfo.aliases ? editedDogInfo.aliases.join(", ") : ""}
             onChange={handleInputChange}
           />
         </label>
@@ -210,7 +249,7 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
             className="edit-input"
             type="text"
             name="relatives"
-            value={editedDogInfo.relatives || ""}
+            value={editedDogInfo.relatives ? editedDogInfo.relatives.join(", ") : ""}
             onChange={handleInputChange}
           />
         </label>
@@ -228,7 +267,7 @@ const SillyDogEdit = ({ dogInfo, onSave, onClose }) => {
             className="edit-input"
             type="text"
             name="affiliations"
-            value={editedDogInfo.affiliations || ""}
+            value={editedDogInfo.affiliation ? editedDogInfo.affiliation.join(", ") : ""}
             onChange={handleInputChange}
           />
         </label>

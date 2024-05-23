@@ -43,7 +43,7 @@ const CreateDogPage = () => {
     nationality: "", // Empty nationality
     aliases: [], // Empty aliases array
     relatives: [], // Empty relatives array
-    affiliations: [],
+    affiliation: [],
     occupation: "", // Empty occupation
     dateOfBirth: "", // Empty date of birth
     placeOfBirth: "", // Empty place of birth
@@ -113,57 +113,50 @@ const CreateDogPage = () => {
       if (editorContainer) {
         // Create a root for rendering SillyDogDisplay component
         const sillyDogDisplayRoot = document.createElement("div");
+        sillyDogDisplayRoot.className = 'default-div'; // Set class name
+  
         // Render SillyDogDisplay component to the root
-        const sillyDogDisplayRootInstance =
-          ReactDOM.createRoot(sillyDogDisplayRoot);
+        const sillyDogDisplayRootInstance = ReactDOM.createRoot(sillyDogDisplayRoot);
         sillyDogDisplayRootInstance.render(
           <SillyDogDisplay dogInfo={dogInfo} onClick={handleSillyDogDisplayClick} />
         );
-
-        // Check if the editor container already has children
-        if (editorContainer.firstChild) {
-          // Insert SillyDogDisplay as the first child of the editorContainer
-          editorContainer.insertBefore(
-            sillyDogDisplayRoot,
-            editorContainer.firstChild
-          );
-        } else {
-          // If no children exist, simply append SillyDogDisplay to the editorContainer
-          editorContainer.appendChild(sillyDogDisplayRoot);
-        }
-
-        // Add event listener to the SillyDogDisplay component
-        sillyDogDisplayRoot.addEventListener("click", handleSillyDogDisplayClick);
+  
+        // Get the first child of the editor container
+        const firstChild = editorContainer.firstChild;
+  
+        // Insert the root before the first child
+        editorContainer.insertBefore(sillyDogDisplayRoot, firstChild);
       }
     };
-
+  
     // Check if the editor is open and then append SillyDogDisplay component
     if (showEditor && !isDogInfoEmpty) {
       // Only append if showEditor is true and dogInfo is not empty
       appendSillyDogDisplayToEditor();
     }
-
+  
     // Clean up event listener when component unmounts or when dependencies change
     return () => {
       const editorContainer = document.querySelector('[data-contents="true"]');
       if (editorContainer) {
-        const sillyDogDisplayRoot = editorContainer.firstChild;
+        const sillyDogDisplayRoot = editorContainer.querySelector('.default-div');
         if (sillyDogDisplayRoot) {
-          sillyDogDisplayRoot.removeEventListener("click", handleSillyDogDisplayClick);
+          sillyDogDisplayRoot.remove(); // Remove the SillyDogDisplay component when unmounting
         }
       }
     };
   }, [showEditor, isDogInfoEmpty, dogInfo]); // Run this effect whenever showEditor, isDogInfoEmpty, or dogInfo changes
-
+  
+  
   const toggleEditor = () => {
     setShowEditor(!showEditor);
-
+  
     // Load page content into editor when toggling
     if (!showEditor) {
       console.log("Editor opened, showEditor is now true");
       // Replace <br> tags with a unique marker
       const contentWithMarker = pageContent.replace(/<br\s*\/?>/gi, "[[BR]]");
-
+  
       // Convert the modified HTML content to EditorState
       const blocksFromHTML = convertFromHTML(contentWithMarker);
       const contentState = ContentState.createFromBlockArray(
@@ -171,7 +164,7 @@ const CreateDogPage = () => {
         blocksFromHTML.entityMap
       );
       const editorState = EditorState.createWithContent(contentState);
-
+  
       // Replace the marker with a special character that represents a single empty line
       const currentContent = editorState.getCurrentContent();
       const rawContentState = convertToRaw(currentContent);
@@ -185,10 +178,10 @@ const CreateDogPage = () => {
       });
       const updatedEditorState =
         EditorState.createWithContent(updatedContentState);
-
+  
       setEditorState(updatedEditorState);
     }
-  };
+  };  
 
   const onSaveContent = () => {
     // Get the current content state
@@ -296,6 +289,10 @@ const CreateDogPage = () => {
 
   const handleCloseModal = () => {
     setShowCustomLinkModal(false);
+  };
+
+  const updateDogInfo = (newDogInfo) => {
+    setDogInfo(newDogInfo);
   };
 
   const onCloseEditor = () => {
@@ -433,7 +430,7 @@ const CreateDogPage = () => {
             )}
           </section>
           {(showEditor && isDogInfoEmpty) || showEditModal ? (
-            <SillyDogEdit dogInfo={dogInfo} onClose={() => setShowEditModal(false)} />
+            <SillyDogEdit dogInfo={dogInfo} onUpdateDogInfo={updateDogInfo} onClose={() => setShowEditModal(false)} />
           ) : null}
         </div>
       </div>

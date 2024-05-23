@@ -14,7 +14,7 @@ const SillyDogDisplay = ({ dogInfo, onClick }) => {
       onClick();
     }
   };
-  
+
   const dummyDog = dogInfo || {
     image: SillyDoggy, // Dummy image URL
     media: [],
@@ -23,7 +23,7 @@ const SillyDogDisplay = ({ dogInfo, onClick }) => {
     nationality: "Dogland", // Dummy nationality
     aliases: ["Fluffy", "Paws"], // Dummy aliases array
     relatives: ["Buddy", "Rover"], // Dummy relatives array
-    affiliations: ["Snoopy"],
+    affiliation: ["Snoopy"],
     occupation: "Professional Tail Wagger", // Dummy occupation
     dateOfBirth: "April 1, 2015", // Dummy date of birth
     placeOfBirth: "Dogville", // Dummy place of birth
@@ -52,52 +52,72 @@ const SillyDogDisplay = ({ dogInfo, onClick }) => {
     <div className="silly-dog-display" onClick={handleDisplayClick}>
       <img className="display-image" src={imageUrl} alt="Dog" />
       <p>
-        <strong>Description:</strong> {dummyDog.description}
+        <strong>Description:</strong>{" "}
+        <span style={{ whiteSpace: "nowrap" }}>{dummyDog.description}</span>
       </p>
       <p>
-        <strong>Status:</strong> {dummyDog.status}
+        <strong>Status:</strong>{" "}
+        <span style={{ whiteSpace: "nowrap" }}>{dummyDog.status}</span>
       </p>
       <p>
-        <strong>Nationality:</strong> {dummyDog.nationality}
+        <strong>Nationality:</strong>{" "}
+        <span style={{ whiteSpace: "nowrap" }}>{dummyDog.nationality}</span>
       </p>
       <div className="aliases-relatives">
         <p>
-          <strong>Aliases:</strong> {dummyDog.aliases}
+          <strong>Aliases:</strong>{" "}
+          {dummyDog.aliases && dummyDog.aliases.length
+            ? dummyDog.aliases.join(", ")
+            : ""}
         </p>
         <p>
-          <strong>Relatives:</strong> {dummyDog.relatives}
+          <strong>Relatives:</strong>{" "}
+          {dummyDog.relatives && dummyDog.relatives.length
+            ? dummyDog.relatives.join(", ")
+            : ""}
         </p>
         <p>
-          <strong>Affiliations:</strong> {dummyDog.affiliations}
+          <strong>Affiliations:</strong>{" "}
+          {dummyDog.affiliation && dummyDog.affiliation.length
+            ? dummyDog.affiliation.join(", ")
+            : ""}
         </p>
+
       </div>
       <p>
-        <strong>Occupation:</strong> {dummyDog.occupation}
+        <strong>Occupation:</strong>{" "}
+        <span style={{ whiteSpace: "nowrap" }}>{dummyDog.occupation}</span>
       </p>
       <hr />
       <h3>Biographical Information</h3>
       <div className="bio-info">
         <p>
-          <strong>Date of Birth:</strong> {dummyDog.dateOfBirth}
+          <strong>Date of Birth:</strong>{" "}
+          <span style={{ whiteSpace: "nowrap" }}>{dummyDog.dateOfBirth}</span>
         </p>
         <p>
-          <strong>Place of Birth:</strong> {dummyDog.placeOfBirth}
+          <strong>Place of Birth:</strong>{" "}
+          <span style={{ whiteSpace: "nowrap" }}>{dummyDog.placeOfBirth}</span>
         </p>
       </div>
       <p>
-        <strong>Marital Status:</strong> {dummyDog.maritalStatus}
+        <strong>Marital Status:</strong>{" "}
+        <span style={{ whiteSpace: "nowrap" }}>{dummyDog.maritalStatus}</span>
       </p>
       <hr />
       <h3>Physical Description</h3>
       <p>
-        <strong>Gender:</strong> {dummyDog.gender}
+        <strong>Gender:</strong>{" "} 
+        <span style={{ whiteSpace: "nowrap" }}>{dummyDog.gender}</span>
       </p>
       <div className="physical-description">
         <p>
-          <strong>Height:</strong> {dummyDog.height}
+          <strong>Height:</strong>{" "}
+          <span style={{ whiteSpace: "nowrap" }}>{dummyDog.height}</span>
         </p>
         <p>
-          <strong>Weight:</strong> {dummyDog.weight}
+          <strong>Weight:</strong>{" "}
+          <span style={{ whiteSpace: "nowrap" }}>{dummyDog.weight}</span>
         </p>
       </div>
     </div>
