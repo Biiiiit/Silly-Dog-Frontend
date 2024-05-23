@@ -219,16 +219,19 @@ const CreateDogPage = () => {
     // console.log(html);
   }, [editorState]);
 
+const openCustomLinkModal = () => {
+    setShowCustomLinkModal(true);
+  };
+
   useEffect(() => {
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        // Check if a new .rdw-link-modal element is added to the DOM
         if (mutation.addedNodes) {
           mutation.addedNodes.forEach((node) => {
             if (node.classList && node.classList.contains("rdw-link-modal")) {
               // Hide the default link modal
               node.style.display = "none";
-
+  
               // Prevent the default modal from closing automatically
               node.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -238,14 +241,12 @@ const CreateDogPage = () => {
         }
       });
     });
-
+  
     // Start observing mutations in the body element
     observer.observe(document.body, { childList: true, subtree: true });
-
+  
     const tryToAddEventListener = () => {
-      const linkButtonWrapper = document.querySelector(
-        '.rdw-option-wrapper[title="Link"]'
-      );
+      const linkButtonWrapper = document.querySelector('.rdw-option-wrapper[title="Link"]');
       if (linkButtonWrapper) {
         linkButtonWrapper.addEventListener("click", openCustomLinkModal);
       } else {
@@ -253,20 +254,19 @@ const CreateDogPage = () => {
         setTimeout(tryToAddEventListener, 100);
       }
     };
-
+  
     // Try to add event listener when component mounts
     tryToAddEventListener();
-
+  
     return () => {
       // Clean up event listener when component unmounts
-      const linkButtonWrapper = document.querySelector(
-        '.rdw-option-wrapper[title="Link"]'
-      );
+      const linkButtonWrapper = document.querySelector('.rdw-option-wrapper[title="Link"]');
       if (linkButtonWrapper) {
         linkButtonWrapper.removeEventListener("click", openCustomLinkModal);
       }
+      observer.disconnect(); // Disconnect the MutationObserver
     };
-  }, []);
+  }, [openCustomLinkModal]); // Ensure the effect depends on openCustomLinkModal  
 
   // Add event listener to the default link button wrapper outside of toggle functions
   document.addEventListener("click", function (event) {
@@ -281,10 +281,6 @@ const CreateDogPage = () => {
 
   const handleDefaultLinkButtonClick = () => {
     openCustomLinkModal();
-  };
-
-  const openCustomLinkModal = () => {
-    setShowCustomLinkModal(true);
   };
 
   const handleCloseModal = () => {
@@ -332,7 +328,6 @@ const CreateDogPage = () => {
       "list",
       "textAlign",
       "link",
-      "embedded",
     ],
     history: {
       inDropdown: false,
@@ -365,11 +360,7 @@ const CreateDogPage = () => {
       inDropdown: false,
       // onClick: handleOpenCustomLinkModal, // Changed from openCustomLinkModal to handleOpenCustomLinkModal
     },
-    embedded: {
-      inDropdown: false,
-      options: ["link", "image", "video"],
-    },
-  };
+  };  
 
   return (
     <ContentContainer>
