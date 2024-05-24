@@ -16,13 +16,28 @@ const HomePage = () => {
 
   const handleNextButtonClick = async () => {
     try {
+      // Check if a SillyDog with the given name already exists
+      const existingDog = await SillyDogManager.getSillyDog(inputValue);
+      if (existingDog) {
+        const { name } = existingDog; // Fix the destructure here
+        // If a SillyDog with the same name already exists, navigate directly to the CreateSillyDog page
+        navigate(`/CreateSillyDog/${name}`);
+        return;
+      }
+
       // Save the silly dog
       const savedDog = await SillyDogManager.saveSillyDog(inputValue);
-      
+
       // Check if the savedDog object contains data
       if (savedDog) {
-        // Extract the name from the saved dog object
-        const { name } = savedDog;
+        // Extract the name and ID from the saved dog object
+        const { name, id } = savedDog;
+        // Check if PageContent exists for the SillyDogID
+        const existingPageContent = await SillyDogManager.getPageContent(id);
+        if (!existingPageContent) {
+          // If PageContent doesn't exist, create a placeholder text
+          await SillyDogManager.savePageContent("<h1>Description</h1>", id);
+        }
         // Navigate to CreateSillyDog page with the name appended to the URL
         navigate(`/CreateSillyDog/${name}`);
       } else {
@@ -31,7 +46,7 @@ const HomePage = () => {
       }
     } catch (error) {
       // Handle errors
-      console.error("Error saving silly dog:", error);
+      console.error("Error saving or retrieving silly dog:", error);
     }
   };
 

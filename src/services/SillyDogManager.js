@@ -1,20 +1,30 @@
 import axios from "axios";
 
 const url = "http://localhost:8080/sillyDogs";
+// Make sure to set the Content-Type header to application/json
+axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 // Get one
 const getSillyDog = async (name) => {
   try {
-    const response = await axios.get(`${url}/${name}`);
-    // Check if response contains data
-    if (response.data) {
-      return response.data;
+    // Step 1: Fetch SillyDogEntity
+    const sillyDogResponse = await axios.get(`${url}/${name}`);
+    
+    if (sillyDogResponse.data) {
+      const sillyDog = sillyDogResponse.data;
+      
+      // Step 2: Fetch associated PageContentEntity
+      const pageContentResponse = await axios.get(`${url}/${sillyDog.id}/pagecontent`);
+      
+      if (pageContentResponse.data) {
+        sillyDog.pageContent = pageContentResponse.data.pageContent;
+      }
+      
+      return sillyDog;
     } else {
-      // Return an empty object if response data is empty
       return {};
     }
   } catch (error) {
-    // Handle errors by returning null
     console.error("Error fetching dog info:", error);
     return null;
   }
@@ -25,9 +35,52 @@ const getManySillyDogs = async () => {
   return await axios.get(url).then((response) => response.data);
 };
 
-// Save
-const saveSillyDog = async (sillyDog) => {
-  return await axios.post(url, sillyDog).then((response) => response.data);
+const saveSillyDog = async (name) => {
+  const data = { name }; // Create a JSON object with the name property
+  return await axios.post(url, data).then((response) => response.data);
+};
+
+const savePageContent = async (pageContent, sillyDogId) => {
+  const url = `http://localhost:5173/sillyDogs/${sillyDogId}/pagecontent`;
+
+  try {
+    const response = await axios.post(url, pageContent, {
+      headers: {
+        'Content-Type': 'text/plain', // Set Content-Type to text/plain for plaintext content
+      },
+    });
+    return response.data;
+  } catch (error) {
+    // Handle error
+    console.error('Error saving page content:', error);
+    throw error;
+  }
+};
+
+const getPageContent = async (sillyDogId) => {
+  const url = `http://localhost:5173/sillyDogs/${sillyDogId}/pagecontent`;
+  
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    // Handle error
+    console.error('Error getting page content:', error);
+    throw error;
+  }
+};
+
+const updatePageContent = async (sillyDogId, updatePageContentRequest) => {
+  const url = `http://localhost:5173/sillyDogs/${sillyDogId}/pagecontent`;
+  
+  try {
+    await axios.put(url, updatePageContentRequest);
+    return; // No need to return anything upon successful update
+  } catch (error) {
+    // Handle error
+    console.error('Error updating page content:', error);
+    throw error;
+  }
 };
 
 // Delete
@@ -46,4 +99,7 @@ export default {
   saveSillyDog,
   deleteSillyDog,
   updateSillyDog,
+  updatePageContent,
+  getPageContent,
+  savePageContent,
 };

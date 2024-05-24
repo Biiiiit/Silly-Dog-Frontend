@@ -28,7 +28,7 @@ const CreateDogPage = () => {
     EditorState.createEmpty()
   );
   const [showEditor, setShowEditor] = useState(false);
-  const [pageContent, setPageContent] = useState("placeholder for text");
+  const [pageContent, setPageContent] = useState("");
   const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
   const [dogInfo, setDogInfo] = useState({}); // Initialize dogInfo state
   const [isDogInfoEmpty, setIsDogInfoEmpty] = useState(true); // Initialize isDogInfoEmpty state
@@ -53,6 +53,27 @@ const CreateDogPage = () => {
     weight: "", // Empty weight
     media: [],
   };
+
+  useEffect(() => {
+    const fetchSillyDogPageContent = async () => {
+      try {
+        // Fetch the SillyDog by name
+        const sillyDog = await SillyDogManager.getSillyDog(name);
+        if (sillyDog && sillyDog.pageContent) {
+          console.log(sillyDog.pageContent);
+          // If the SillyDog and its pageContent exist, set the pageContent state
+          setPageContent(sillyDog.pageContent);
+        }
+      } catch (error) {
+        console.error("Error fetching SillyDog page content:", error);
+      }
+    };
+
+    // Call the function to fetch the page content when the component mounts
+    fetchSillyDogPageContent();
+
+    // Specify the dependencies for the effect
+  }, [name]);
 
   const handleSillyDogDisplayClick = () => {
     // Open SillyDogEdit modal when SillyDogDisplay is clicked
