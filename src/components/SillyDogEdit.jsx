@@ -18,17 +18,20 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
   useEffect(() => {
     if (dogInfo && dogInfo.media && dogInfo.media[0]) {
       const fetchImageUrl = async () => {
-        setImageUrl(
-          await getDownloadURL(
-            ref(imageUploader, dogInfo.media[0].locationReference)
-          )
-        );
+        const locationReference = dogInfo.media[0].locationReference;
+        try {
+          const url = await getDownloadURL(ref(imageUploader, locationReference));
+          setImageUrl(url);
+        } catch (error) {
+          console.error("Error fetching image URL:", error);
+          setImageUrl(SillyDoggy); // Set a default image URL in case of error
+        }
       };
       fetchImageUrl();
     } else {
       setImageUrl(SillyDoggy);
     }
-  }, [dogInfo]);
+  }, [dogInfo, setImageUrl]);  
 
   useEffect(() => {
     if (media && media[0]) {
