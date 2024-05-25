@@ -88,21 +88,21 @@ const CreateDogPage = () => {
         // Fetch the SillyDog by name
         const fetchedDogInfo = await SillyDogManager.getSillyDog(nameDecoded);
         console.log("Fetched Dog Info:", fetchedDogInfo);
-  
+
         const dogData = fetchedDogInfo || defaultDogInfo;
         console.log("Processed Dog Data:", dogData);
-  
+
         const isEmpty = Object.values(dogData).some((value) => value === "");
         console.log("Is dog info empty?", isEmpty);
-  
+
         // Update the dogInfo state and isDogInfoEmpty state here
         setDogInfo(dogData);
         setIsDogInfoEmpty(isEmpty);
-  
+
         // If the SillyDog and its pageContent exist, set the pageContent state
         if (dogData.pageContent) {
           console.log("Page Content:", dogData.pageContent);
-          setPageContent(dogData.pageContent);
+          setPageContent(dogData.pageContent.data.pageContent);
         } else {
           console.log("No Page Content found.");
         }
@@ -115,12 +115,12 @@ const CreateDogPage = () => {
         setIsDogInfoEmpty(true);
       }
     };
-  
+
     // Call the function to fetch the dog info and page content when the component mounts or name changes
     fetchSillyDogData();
-  
+
     // Specify the dependencies for the effect
-  }, [name]);  
+  }, [name]);
 
   useEffect(() => {
     // Function to append SillyDogDisplay component to the editor container
@@ -132,27 +132,27 @@ const CreateDogPage = () => {
         // Create a root for rendering SillyDogDisplay component
         const sillyDogDisplayRoot = document.createElement("div");
         sillyDogDisplayRoot.className = 'default-div'; // Set class name
-  
+
         // Render SillyDogDisplay component to the root
         const sillyDogDisplayRootInstance = ReactDOM.createRoot(sillyDogDisplayRoot);
         sillyDogDisplayRootInstance.render(
           <SillyDogDisplay dogInfo={dogInfo} onClick={handleSillyDogDisplayClick} />
         );
-  
+
         // Get the first child of the editor container
         const firstChild = editorContainer.firstChild;
-  
+
         // Insert the root before the first child
         editorContainer.insertBefore(sillyDogDisplayRoot, firstChild);
       }
     };
-  
+
     // Check if the editor is open and then append SillyDogDisplay component
     if (showEditor && !isDogInfoEmpty) {
       // Only append if showEditor is true and dogInfo is not empty
       appendSillyDogDisplayToEditor();
     }
-  
+
     // Clean up event listener when component unmounts or when dependencies change
     return () => {
       const editorContainer = document.querySelector('[data-contents="true"]');
@@ -164,17 +164,17 @@ const CreateDogPage = () => {
       }
     };
   }, [showEditor, isDogInfoEmpty, dogInfo]); // Run this effect whenever showEditor, isDogInfoEmpty, or dogInfo changes
-  
-  
+
+
   const toggleEditor = () => {
     setShowEditor(!showEditor);
-  
+
     // Load page content into editor when toggling
     if (!showEditor) {
       console.log("Editor opened, showEditor is now true");
       // Replace <br> tags with a unique marker
       const contentWithMarker = pageContent.replace(/<br\s*\/?>/gi, "[[BR]]");
-  
+
       // Convert the modified HTML content to EditorState
       const blocksFromHTML = convertFromHTML(contentWithMarker);
       const contentState = ContentState.createFromBlockArray(
@@ -182,7 +182,7 @@ const CreateDogPage = () => {
         blocksFromHTML.entityMap
       );
       const editorState = EditorState.createWithContent(contentState);
-  
+
       // Replace the marker with a special character that represents a single empty line
       const currentContent = editorState.getCurrentContent();
       const rawContentState = convertToRaw(currentContent);
@@ -196,15 +196,15 @@ const CreateDogPage = () => {
       });
       const updatedEditorState =
         EditorState.createWithContent(updatedContentState);
-  
+
       setEditorState(updatedEditorState);
     }
-  };  
+  };
 
   const onSaveContent = async () => {
     // Get the current content state
     const contentState = editorState.getCurrentContent();
-  
+
     // Convert the content state to HTML with link entities properly converted
     let html = convertToHTML({
       entityToHTML: (entity, originalText) => {
@@ -214,31 +214,31 @@ const CreateDogPage = () => {
         return originalText;
       },
     })(contentState);
-  
+
     // Replace all <p><br/></p> with <br>
     html = html.replace(/<p><br\s*\/?><\/p>/g, "<br>");
-  
+
     // Replace remaining <p> tags with a single <br> each
     html = html.replace(/<p>/g, "<br>");
-  
+
     console.log(html); // Log the HTML to check if it's correct
-  
+
     // Save the HTML content by updating the state
     setPageContent(html);
-  
+
     // Hide the editor after saving
     toggleEditor();
-  
+
     // Update the page content
     if (dogInfo && dogInfo.id && html) {
       try {
         // Construct the updatePageContentRequest object
         const updatePageContentRequest = {
-          id: dogInfo.id,
+          id: dogInfo.pageContent.data.id,
           content: html,
-          sillyDogId: dogInfo.id  // Assuming sillyDogId is the same as the dogInfo.id
+          sillyDogId: dogInfo.id // Assuming sillyDogId is the same as the dogInfo.id
         };
-        
+
         // Call the SillyDogManager to update the page content
         await SillyDogManager.updatePageContent(dogInfo.id, updatePageContentRequest);
         console.log('Page content updated successfully.');
@@ -246,8 +246,7 @@ const CreateDogPage = () => {
         console.error('Error updating page content:', error);
       }
     }
-};
-
+  };
 
   const onEditorStateChange = (newEditorState) => {
     setEditorState(newEditorState);
@@ -258,7 +257,7 @@ const CreateDogPage = () => {
     // console.log(html);
   }, [editorState]);
 
-const openCustomLinkModal = () => {
+  const openCustomLinkModal = () => {
     setShowCustomLinkModal(true);
   };
 
@@ -270,7 +269,7 @@ const openCustomLinkModal = () => {
             if (node.classList && node.classList.contains("rdw-link-modal")) {
               // Hide the default link modal
               node.style.display = "none";
-  
+
               // Prevent the default modal from closing automatically
               node.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -280,10 +279,10 @@ const openCustomLinkModal = () => {
         }
       });
     });
-  
+
     // Start observing mutations in the body element
     observer.observe(document.body, { childList: true, subtree: true });
-  
+
     const tryToAddEventListener = () => {
       const linkButtonWrapper = document.querySelector('.rdw-option-wrapper[title="Link"]');
       if (linkButtonWrapper) {
@@ -293,10 +292,10 @@ const openCustomLinkModal = () => {
         setTimeout(tryToAddEventListener, 100);
       }
     };
-  
+
     // Try to add event listener when component mounts
     tryToAddEventListener();
-  
+
     return () => {
       // Clean up event listener when component unmounts
       const linkButtonWrapper = document.querySelector('.rdw-option-wrapper[title="Link"]');
@@ -399,7 +398,7 @@ const openCustomLinkModal = () => {
       inDropdown: false,
       // onClick: handleOpenCustomLinkModal, // Changed from openCustomLinkModal to handleOpenCustomLinkModal
     },
-  };  
+  };
 
   return (
     <ContentContainer>

@@ -17,7 +17,7 @@ const getSillyDog = async (name) => {
       const pageContentResponse = await axios.get(`${url}/${sillyDog.id}/pagecontent`);
       
       if (pageContentResponse.data) {
-        sillyDog.pageContent = pageContentResponse.data.pageContent;
+        sillyDog.pageContent = pageContentResponse;
       }
       
       return sillyDog;
@@ -70,13 +70,12 @@ const getPageContent = async (sillyDogId) => {
   }
 };
 
-const updatePageContent = async (sillyDogId, updatePageContentRequest) => {
-  const url = `http://localhost:5173/sillyDogs/${sillyDogId}/pagecontent`;
+const updatePageContent = async (id, updatePageContentRequest) => {
   console.log(updatePageContentRequest);
   try {
     
     // Make the PUT request with the updated request object
-    await axios.put(url, updatePageContentRequest);
+    await axios.put(`${url}/${id}/pagecontent`, updatePageContentRequest).then((response) => response.data);
     
     return; // No need to return anything upon successful update
   } catch (error) {
