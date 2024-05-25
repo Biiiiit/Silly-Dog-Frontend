@@ -54,27 +54,6 @@ const CreateDogPage = () => {
     media: [],
   };
 
-  useEffect(() => {
-    const fetchSillyDogPageContent = async () => {
-      try {
-        // Fetch the SillyDog by name
-        const sillyDog = await SillyDogManager.getSillyDog(name);
-        if (sillyDog && sillyDog.pageContent) {
-          console.log(sillyDog.pageContent);
-          // If the SillyDog and its pageContent exist, set the pageContent state
-          setPageContent(sillyDog.pageContent);
-        }
-      } catch (error) {
-        console.error("Error fetching SillyDog page content:", error);
-      }
-    };
-
-    // Call the function to fetch the page content when the component mounts
-    fetchSillyDogPageContent();
-
-    // Specify the dependencies for the effect
-  }, [name]);
-
   const handleSillyDogDisplayClick = () => {
     // Open SillyDogEdit modal when SillyDogDisplay is clicked
     console.log(showEditModal);
@@ -103,27 +82,45 @@ const CreateDogPage = () => {
   }, [handleSillyDogDisplayClick]); // Run this effect whenever handleSillyDogDisplayClick changes
 
   useEffect(() => {
-    let nameDecoded = decodeURIComponent(name.replace(/\+/g, " "));
-    // Fetch dog info when component mounts or name changes
-    SillyDogManager.getSillyDog(nameDecoded)
-      .then((fetchedDogInfo) => {
+    const fetchSillyDogData = async () => {
+      let nameDecoded = decodeURIComponent(name.replace(/\+/g, " "));
+      try {
+        // Fetch the SillyDog by name
+        const fetchedDogInfo = await SillyDogManager.getSillyDog(nameDecoded);
+        console.log("Fetched Dog Info:", fetchedDogInfo);
+  
         const dogData = fetchedDogInfo || defaultDogInfo;
-        console.log("Dog Info:", dogData);
+        console.log("Processed Dog Data:", dogData);
+  
         const isEmpty = Object.values(dogData).some((value) => value === "");
         console.log("Is dog info empty?", isEmpty);
+  
         // Update the dogInfo state and isDogInfoEmpty state here
         setDogInfo(dogData);
         setIsDogInfoEmpty(isEmpty);
-      })
-      .catch((error) => {
-        console.error("Error fetching dog info:", error);
+  
+        // If the SillyDog and its pageContent exist, set the pageContent state
+        if (dogData.pageContent) {
+          console.log("Page Content:", dogData.pageContent);
+          setPageContent(dogData.pageContent);
+        } else {
+          console.log("No Page Content found.");
+        }
+      } catch (error) {
+        console.error("Error fetching dog info or page content:", error);
         // Handle error if necessary
         // Set dogInfo to default if there's an error
         setDogInfo(defaultDogInfo);
         // Set isDogInfoEmpty to true if there's an error
         setIsDogInfoEmpty(true);
-      });
-  }, [name]); // Fetch dog info whenever name changes
+      }
+    };
+  
+    // Call the function to fetch the dog info and page content when the component mounts or name changes
+    fetchSillyDogData();
+  
+    // Specify the dependencies for the effect
+  }, [name]);  
 
   useEffect(() => {
     // Function to append SillyDogDisplay component to the editor container
@@ -204,10 +201,10 @@ const CreateDogPage = () => {
     }
   };  
 
-  const onSaveContent = () => {
+  const onSaveContent = async () => {
     // Get the current content state
     const contentState = editorState.getCurrentContent();
-
+  
     // Convert the content state to HTML with link entities properly converted
     let html = convertToHTML({
       entityToHTML: (entity, originalText) => {
@@ -217,19 +214,40 @@ const CreateDogPage = () => {
         return originalText;
       },
     })(contentState);
-
+  
     // Replace all <p><br/></p> with <br>
     html = html.replace(/<p><br\s*\/?><\/p>/g, "<br>");
-
+  
     // Replace remaining <p> tags with a single <br> each
     html = html.replace(/<p>/g, "<br>");
-
+  
     console.log(html); // Log the HTML to check if it's correct
-
-    // Save the HTML content
+  
+    // Save the HTML content by updating the state
     setPageContent(html);
-    toggleEditor(); // Hide the editor after saving
-  };
+  
+    // Hide the editor after saving
+    toggleEditor();
+  
+    // Update the page content
+    if (dogInfo && dogInfo.id && html) {
+      try {
+        // Construct the updatePageContentRequest object
+        const updatePageContentRequest = {
+          id: dogInfo.id,
+          content: html,
+          sillyDogId: dogInfo.id  // Assuming sillyDogId is the same as the dogInfo.id
+        };
+        
+        // Call the SillyDogManager to update the page content
+        await SillyDogManager.updatePageContent(dogInfo.id, updatePageContentRequest);
+        console.log('Page content updated successfully.');
+      } catch (error) {
+        console.error('Error updating page content:', error);
+      }
+    }
+};
+
 
   const onEditorStateChange = (newEditorState) => {
     setEditorState(newEditorState);

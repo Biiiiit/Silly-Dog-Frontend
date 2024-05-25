@@ -72,9 +72,12 @@ const getPageContent = async (sillyDogId) => {
 
 const updatePageContent = async (sillyDogId, updatePageContentRequest) => {
   const url = `http://localhost:5173/sillyDogs/${sillyDogId}/pagecontent`;
-  
+  console.log(updatePageContentRequest);
   try {
+    
+    // Make the PUT request with the updated request object
     await axios.put(url, updatePageContentRequest);
+    
     return; // No need to return anything upon successful update
   } catch (error) {
     // Handle error
