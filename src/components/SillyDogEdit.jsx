@@ -31,22 +31,24 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
   }, [dogInfo]);
 
   useEffect(() => {
-    if (media && media[0] && media[0] !== editedDogInfo.image) { // Check if media has changed
+    if (media && media[0]) {
       const file = media[0];
       const reader = new FileReader();
   
       reader.onload = async (event) => {
-        const imageUrl = event.target.result;
-        setEditedDogInfo((prevState) => ({
-          ...prevState,
-          image: imageUrl,
-        }));
-        setImageUrl(imageUrl); // Update imageUrl state with the new image URL
+        const newImageUrl = event.target.result;
+        if (newImageUrl !== editedDogInfo.image) { // Check if the new image URL is different
+          setEditedDogInfo((prevState) => ({
+            ...prevState,
+            image: newImageUrl,
+          }));
+          setImageUrl(newImageUrl); // Update imageUrl state with the new image URL
+        }
       };
   
       reader.readAsDataURL(file);
     }
-  }, [media, editedDogInfo.image]); // Include editedDogInfo.image in the dependencies  
+  }, [media, editedDogInfo.image]);  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
