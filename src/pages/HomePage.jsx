@@ -1,21 +1,53 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import "./css/HomePage.css"
-import ContentContainer from '../components/ContentContainer';
-import DogImage from '../assets/SillyDoggy.png';
-import createDogImage from '../assets/createSillyDog.png';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import "./css/HomePage.css";
+import ContentContainer from "../components/ContentContainer";
+import DogImage from "../assets/SillyDoggy.png";
+import createDogImage from "../assets/createSillyDog.png";
+import SillyDogManager from "../services/SillyDogManager";
 
 const HomePage = () => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const navigate = useNavigate(); // Initialize useNavigate
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
 
-  const handleNextButtonClick = () => {
-    // Navigate to CreateSillyDog page with input value appended to the URL
-    navigate(`/CreateSillyDog/${inputValue}`);
+  const handleNextButtonClick = async () => {
+    try {
+      // Check if a SillyDog with the given name already exists
+      const existingDog = await SillyDogManager.getSillyDog(inputValue);
+      if (existingDog) {
+        const { name } = existingDog; // Fix the destructure here
+        // If a SillyDog with the same name already exists, navigate directly to the CreateSillyDog page
+        navigate(`/CreateSillyDog/${name}`);
+        return;
+      }
+
+      // Save the silly dog
+      const savedDog = await SillyDogManager.saveSillyDog(inputValue);
+
+      // Check if the savedDog object contains data
+      if (savedDog) {
+        // Extract the name and ID from the saved dog object
+        const { name, id } = savedDog;
+        // Check if PageContent exists for the SillyDogID
+        const existingPageContent = await SillyDogManager.getPageContent(id);
+        if (!existingPageContent) {
+          // If PageContent doesn't exist, create a placeholder text
+          await SillyDogManager.savePageContent("<h1>Description</h1>", id);
+        }
+        // Navigate to CreateSillyDog page with the name appended to the URL
+        navigate(`/CreateSillyDog/${name}`);
+      } else {
+        // Handle the case where savedDog is empty
+        console.error("Error saving silly dog: No data returned");
+      }
+    } catch (error) {
+      // Handle errors
+      console.error("Error saving or retrieving silly dog:", error);
+    }
   };
 
   return (
@@ -25,9 +57,15 @@ const HomePage = () => {
           <img src={DogImage} alt="Silly Dog" className="dog-image" />
           <div className="text-content">
             <h1>Welcome to Silly Dog Wiki!</h1>
-            <p>This is the place for all your sillyness and inquiries about doggies.</p>
+            <p>
+              This is the place for all your sillyness and inquiries about
+              doggies.
+            </p>
             <p>Feel free to look for some silly dogs and have fun.</p>
-            <p>Disclaimer: This is not related to the Silly Cat Wiki, this is just a hobby project</p>
+            <p>
+              Disclaimer: This is not related to the Silly Cat Wiki, this is
+              just a hobby project
+            </p>
             <p>Feel free to add to the collection of doggies however {":)"}</p>
           </div>
         </div>
@@ -36,17 +74,22 @@ const HomePage = () => {
         <div className="content-with-image">
           <div className="text-content">
             <h1>Create a Silly Dog</h1>
-            <p>Are you ready to create your own Silly Dog? Well let's get started then. Type in the name of your Silly Dog below and click on the next button. We cant wait to see your new Silly Dog.</p>
-            <div className='dogInput'>
+            <p>
+              Are you ready to create your own Silly Dog? Well let's get started
+              then. Type in the name of your Silly Dog below and click on the
+              next button. We cant wait to see your new Silly Dog.
+            </p>
+            <div className="dogInput">
               <input
-                className='doggyInput'
+                className="doggyInput"
                 type="text"
                 value={inputValue}
-                onChange= {handleInputChange}
+                onChange={handleInputChange}
                 placeholder="Type here..."
               />
             </div>
-            <br/><br/>
+            <br />
+            <br />
             <button onClick={handleNextButtonClick}>Next</button>
           </div>
           <img src={createDogImage} alt="Silly Dog" className="dog-image" />

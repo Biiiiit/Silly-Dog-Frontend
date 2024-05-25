@@ -10,15 +10,21 @@ const CustomLinkModal = ({ onCancel, visible, onAddLink }) => {
 
   useEffect(() => {
     if (visible) {
-      const linkButton = document.querySelector('.rdw-option-wrapper[title="Link"]');
-      if (linkButton) {
-        const linkButtonRect = linkButton.getBoundingClientRect();
-        const modalTop = linkButtonRect.bottom;
-        const modalLeft = linkButtonRect.left;
-        setModalPosition({ top: modalTop, left: modalLeft });
-      }
+      setTimeout(() => {
+        const linkButtonWrapper = document.querySelector('.rdw-option-wrapper[title="Link"]');
+        if (linkButtonWrapper) {
+          const editorContainer = document.querySelector('.editor-container');
+          if (editorContainer) {
+            const editorRect = editorContainer.getBoundingClientRect();
+            const linkButtonRect = linkButtonWrapper.getBoundingClientRect();
+            const top = linkButtonRect.bottom - editorRect.top + window.pageYOffset + 10; // Adjust for window scroll
+            const left = linkButtonRect.left - editorRect.left - 10;
+            setModalPosition({ top, left });
+          }
+        }
+      }, 100); // Adjust the delay as needed
     }
-  }, [visible]);
+  }, []);  
 
   const linkButtonWrapper = document.querySelector('.rdw-option-wrapper[title="Link"]');
   if (linkButtonWrapper) {

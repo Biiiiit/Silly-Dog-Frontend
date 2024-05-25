@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./css/Navbar.css";
-import SillyDoggyImage from '../assets/SillyDoggy.png';
+import SillyDoggyImage from "../assets/SillyDoggy.png";
 
 function Navbar() {
   return (
@@ -11,36 +11,37 @@ function Navbar() {
           <div className="col-6 col-md-1">
             <div className="logo text-start">
               <Link to="/">
-                <img
-                  src={SillyDoggyImage}
-                  width="50"
-                  height="50"
-                  alt="Logo"
-                />
+                <img src={SillyDoggyImage} width="50" height="50" alt="Logo" />
               </Link>
             </div>
           </div>
           <div className="col-7 col-md-3">
             <nav className="navbar-links text-start">
-              <Link className="home-link" to="/">Silly Dog Wiki</Link>
+              <Link className="home-link" to="/">
+                Silly Dog Wiki
+              </Link>
               <ul className="d-flex">
                 <li>
-                  <div class="dropdown">
-                    <a href="#" class="dropbtn">Navigation</a>
-                      <div class="dropdown-content">
-                        <a href="#">Link 1</a>
-                        <a href="#">Link 2</a>
-                        <a href="#">Link 3</a>
-                      </div>
+                  <div className="dropdown">
+                    <a href="#" className="dropbtn">
+                      Navigation
+                    </a>
+                    <div className="dropdown-content">
+                      <a href="#">Link 1</a>
+                      <a href="#">Link 2</a>
+                      <a href="#">Link 3</a>
+                    </div>
                   </div>
                 </li>
                 <li>
-                  <div class="dropdown">
-                    <a href="#" class="dropbtn">Contribution</a>
-                      <div class="dropdown-content">
-                        <a href="#">Link 2</a>
-                        <a href="#">Link 3</a>
-                      </div>
+                  <div className="dropdown">
+                    <a href="#" className="dropbtn">
+                      Contribution
+                    </a>
+                    <div className="dropdown-content">
+                      <a href="#">Link 2</a>
+                      <a href="#">Link 3</a>
+                    </div>
                   </div>
                 </li>
                 <li>
