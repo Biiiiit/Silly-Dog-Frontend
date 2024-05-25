@@ -76,7 +76,7 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
         if (fileType === "image") {
           // Use the current location reference for updating
           const currentLocationReference = editedDogInfo.media[i]?.locationReference;
-          
+  
           if (!currentLocationReference) {
             console.error("Error: Location reference not found for media item", i);
             continue;
@@ -112,7 +112,7 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
           return [];
         }
       };
-
+  
       const updatedDogInfo = {
         id: editedDogInfo.id,
         name: editedDogInfo.name,
@@ -136,8 +136,8 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
   
       // Call the updateSillyDog method with the updated dog info
       await SillyDogManager.updateSillyDog(updatedDogInfo.id, updatedDogInfo);
-      onUpdateDogInfo(editedDogInfo);
-
+      onUpdateDogInfo(updatedDogInfo); // Update with the new data after successful database update
+  
       onClose();
     } catch (error) {
       console.error("Error saving art piece:", error);
