@@ -119,4 +119,5 @@
 .App {
   position: relative; /* Ensure other content is positioned relative to the viewport */
   z-index: 1; /* Ensure other content stays above the background */
+  min-height: 100vh;
 }
