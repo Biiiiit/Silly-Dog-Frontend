@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./css/Navbar.css";
-import SillyDoggyImage from "../assets/SillyDoggy.png";
+import SillyDoggyImage from "../assets/SillyDoggy.webP";
 
 function Navbar() {
   return (

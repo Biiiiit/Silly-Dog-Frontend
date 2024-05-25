@@ -10,6 +10,6 @@ export default defineConfig(({ mode }) => {
       "process.env": env,
     },
     plugins: [react(), pluginRewriteAll()],
-    assetsInclude: ['**/*.webp'],
+    assetsInclude: ['**/*.webP'],
   };
 });
