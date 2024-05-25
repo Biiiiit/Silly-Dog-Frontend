@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "./css/HomePage.css";
 import ContentContainer from "../components/ContentContainer";
-import DogImage from "../assets/SillyDoggy.png";
-import createDogImage from "../assets/createSillyDog.png";
+import DogImage from "../assets/SillyDoggy.webP";
+import createDogImage from "../assets/createSillyDog.webP";
 import SillyDogManager from "../services/SillyDogManager";
 
 const HomePage = () => {

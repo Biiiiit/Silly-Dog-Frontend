@@ -20,7 +20,7 @@ import "./css/Editor.css";
 import CustomLinkModal from "../components/CustomLinkModal";
 import SillyDogDisplay from "../components/SillyDogDisplayer";
 import SillyDogEdit from "../components/SillyDogEdit";
-import SillyDogImage from "../assets/SillyDoggy.png";
+import SillyDogImage from "../assets/SillyDoggy.webP";
 import SillyDogManager from "../services/SillyDogManager";
 
 const CreateDogPage = () => {

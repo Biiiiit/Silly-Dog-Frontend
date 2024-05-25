@@ -6,7 +6,7 @@ import "./css/SillyDogDisplayer.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons"; // Import the edit icon
 import SillyDogManager from "../services/SillyDogManager";
-import SillyDoggy from "../assets/SillyDoggy.png";
+import SillyDoggy from "../assets/SillyDoggy.webP";
 
 const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
   const [editedDogInfo, setEditedDogInfo] = useState(dogInfo);
