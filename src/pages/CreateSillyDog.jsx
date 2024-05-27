@@ -20,7 +20,7 @@ import "./css/Editor.css";
 import CustomLinkModal from "../components/CustomLinkModal";
 import SillyDogDisplay from "../components/SillyDogDisplayer";
 import SillyDogEdit from "../components/SillyDogEdit";
-import SillyDogImage from "../assets/SillyDoggy.png";
+import SillyDogImage from "../assets/SillyDoggy.webP";
 import SillyDogManager from "../services/SillyDogManager";
 
 const CreateDogPage = () => {
@@ -30,7 +30,7 @@ const CreateDogPage = () => {
   const [showEditor, setShowEditor] = useState(false);
   const [pageContent, setPageContent] = useState("");
   const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
-  const [dogInfo, setDogInfo] = useState({}); // Initialize dogInfo state
+  const [dogInfo, setDogInfo] = useState(""); // Initialize dogInfo state
   const [isDogInfoEmpty, setIsDogInfoEmpty] = useState(true); // Initialize isDogInfoEmpty state
   const [showEditModal, setShowEditModal] = useState(false);
   const { name } = useParams(); // Get the inputData from URL parameters
@@ -85,42 +85,29 @@ const CreateDogPage = () => {
     const fetchSillyDogData = async () => {
       let nameDecoded = decodeURIComponent(name.replace(/\+/g, " "));
       try {
-        // Fetch the SillyDog by name
         const fetchedDogInfo = await SillyDogManager.getSillyDog(nameDecoded);
-        console.log("Fetched Dog Info:", fetchedDogInfo);
-
         const dogData = fetchedDogInfo || defaultDogInfo;
-        console.log("Processed Dog Data:", dogData);
-
         const isEmpty = Object.values(dogData).some((value) => value === "");
-        console.log("Is dog info empty?", isEmpty);
 
-        // Update the dogInfo state and isDogInfoEmpty state here
         setDogInfo(dogData);
         setIsDogInfoEmpty(isEmpty);
 
-        // If the SillyDog and its pageContent exist, set the pageContent state
         if (dogData.pageContent) {
-          console.log("Page Content:", dogData.pageContent);
           setPageContent(dogData.pageContent.data.pageContent);
-        } else {
-          console.log("No Page Content found.");
         }
       } catch (error) {
         console.error("Error fetching dog info or page content:", error);
-        // Handle error if necessary
-        // Set dogInfo to default if there's an error
         setDogInfo(defaultDogInfo);
-        // Set isDogInfoEmpty to true if there's an error
         setIsDogInfoEmpty(true);
       }
     };
 
-    // Call the function to fetch the dog info and page content when the component mounts or name changes
     fetchSillyDogData();
+  }, []);
 
-    // Specify the dependencies for the effect
-  }, [name]);
+  useEffect(() => {
+    console.log("dogInfo gotten:", dogInfo);
+  }, [dogInfo]);  
 
   useEffect(() => {
     // Function to append SillyDogDisplay component to the editor container
@@ -163,7 +150,7 @@ const CreateDogPage = () => {
         }
       }
     };
-  }, [showEditor, isDogInfoEmpty, dogInfo]); // Run this effect whenever showEditor, isDogInfoEmpty, or dogInfo changes
+  }, [showEditor]); // Run this effect whenever showEditor, isDogInfoEmpty, or dogInfo changes
 
 
   const toggleEditor = () => {
@@ -327,10 +314,6 @@ const CreateDogPage = () => {
 
   const updateDogInfo = (newDogInfo) => {
     setDogInfo(newDogInfo);
-  };
-
-  const onCloseEditor = () => {
-    setShowEditor(false);
   };
 
   const handleAddLink = (url, title) => {

@@ -6,7 +6,7 @@ import "./css/SillyDogDisplayer.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons"; // Import the edit icon
 import SillyDogManager from "../services/SillyDogManager";
-import SillyDoggy from "../assets/SillyDoggy.png";
+import SillyDoggy from "../assets/SillyDoggy.webP";
 
 const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
   const [editedDogInfo, setEditedDogInfo] = useState(dogInfo);
@@ -18,35 +18,40 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
   useEffect(() => {
     if (dogInfo && dogInfo.media && dogInfo.media[0]) {
       const fetchImageUrl = async () => {
-        setImageUrl(
-          await getDownloadURL(
-            ref(imageUploader, dogInfo.media[0].locationReference)
-          )
-        );
+        const locationReference = dogInfo.media[0].locationReference;
+        try {
+          const url = await getDownloadURL(ref(imageUploader, locationReference));
+          setImageUrl(url);
+        } catch (error) {
+          console.error("Error fetching image URL:", error);
+          setImageUrl(SillyDoggy); // Set a default image URL in case of error
+        }
       };
       fetchImageUrl();
     } else {
       setImageUrl(SillyDoggy);
     }
-  }, [dogInfo]);
+  }, [dogInfo, setImageUrl]);  
 
   useEffect(() => {
     if (media && media[0]) {
       const file = media[0];
       const reader = new FileReader();
-
+  
       reader.onload = async (event) => {
-        const imageUrl = event.target.result;
-        setEditedDogInfo((prevState) => ({
-          ...prevState,
-          image: imageUrl,
-        }));
-        setImageUrl(imageUrl); // Update imageUrl state with the new image URL
+        const newImageUrl = event.target.result;
+        if (newImageUrl !== editedDogInfo.image) { // Check if the new image URL is different
+          setEditedDogInfo((prevState) => ({
+            ...prevState,
+            image: newImageUrl,
+          }));
+          setImageUrl(newImageUrl); // Update imageUrl state with the new image URL
+        }
       };
-
+  
       reader.readAsDataURL(file);
     }
-  }, [media]);
+  }, [media, editedDogInfo.image]);  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -74,7 +79,7 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
         if (fileType === "image") {
           // Use the current location reference for updating
           const currentLocationReference = editedDogInfo.media[i]?.locationReference;
-          
+  
           if (!currentLocationReference) {
             console.error("Error: Location reference not found for media item", i);
             continue;
@@ -110,7 +115,7 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
           return [];
         }
       };
-
+  
       const updatedDogInfo = {
         id: editedDogInfo.id,
         name: editedDogInfo.name,
@@ -134,8 +139,8 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
   
       // Call the updateSillyDog method with the updated dog info
       await SillyDogManager.updateSillyDog(updatedDogInfo.id, updatedDogInfo);
-      onUpdateDogInfo(editedDogInfo);
-
+      onUpdateDogInfo(updatedDogInfo); // Update with the new data after successful database update
+  
       onClose();
     } catch (error) {
       console.error("Error saving art piece:", error);

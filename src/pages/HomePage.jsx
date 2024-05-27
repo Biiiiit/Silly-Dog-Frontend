@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "./css/HomePage.css";
 import ContentContainer from "../components/ContentContainer";
-import DogImage from "../assets/SillyDoggy.png";
-import createDogImage from "../assets/createSillyDog.png";
+import DogImage from "../assets/SillyDoggy.webP";
+import createDogImage from "../assets/createSillyDog.webP";
 import SillyDogManager from "../services/SillyDogManager";
 
 const HomePage = () => {
@@ -16,28 +16,22 @@ const HomePage = () => {
 
   const handleNextButtonClick = async () => {
     try {
-      // Check if a SillyDog with the given name already exists
-      const existingDog = await SillyDogManager.getSillyDog(inputValue);
-      if (existingDog) {
-        const { name } = existingDog; // Fix the destructure here
-        // If a SillyDog with the same name already exists, navigate directly to the CreateSillyDog page
-        navigate(`/CreateSillyDog/${name}`);
-        return;
-      }
-
-      // Save the silly dog
+      // Attempt to save the SillyDog
       const savedDog = await SillyDogManager.saveSillyDog(inputValue);
-
+  
       // Check if the savedDog object contains data
       if (savedDog) {
         // Extract the name and ID from the saved dog object
         const { name, id } = savedDog;
+  
         // Check if PageContent exists for the SillyDogID
-        const existingPageContent = await SillyDogManager.getPageContent(id);
+        let existingPageContent = await SillyDogManager.getPageContent(id);
+  
+        // If PageContent doesn't exist, create a placeholder text
         if (!existingPageContent) {
-          // If PageContent doesn't exist, create a placeholder text
-          await SillyDogManager.savePageContent("<h1>Description</h1>", id);
+          existingPageContent = await SillyDogManager.savePageContent("<h1>Description</h1>", id);
         }
+  
         // Navigate to CreateSillyDog page with the name appended to the URL
         navigate(`/CreateSillyDog/${name}`);
       } else {
@@ -48,7 +42,7 @@ const HomePage = () => {
       // Handle errors
       console.error("Error saving or retrieving silly dog:", error);
     }
-  };
+  };  
 
   return (
     <ContentContainer>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./css/SillyDogDisplayer.css";
-import SillyDoggy from "../assets/SillyDoggy.png";
+import SillyDoggy from "../assets/SillyDoggy.webP";
 import { getDownloadURL, ref } from "firebase/storage";
 import { imageUploader } from "../services/Firebase";
 
