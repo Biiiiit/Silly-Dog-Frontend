@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = "https://graceful-wylma-silly-dog-wiki-1906a282.koyeb.app/sillyDogs";
+const url = "https://graceful-wylma-silly-dog-wiki-1906a282.koyeb.app:8000/sillyDogs";
 // Make sure to set the Content-Type header to application/json
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
@@ -41,7 +41,7 @@ const saveSillyDog = async (name) => {
 };
 
 const savePageContent = async (pageContent, sillyDogId) => {
-  const url = `https://graceful-wylma-silly-dog-wiki-1906a282.koyeb.app/sillyDogs/${sillyDogId}/pagecontent`;
+  const url = `https://graceful-wylma-silly-dog-wiki-1906a282.koyeb.app:8000/sillyDogs/${sillyDogId}/pagecontent`;
 
   try {
     const response = await axios.post(url, pageContent, {
@@ -58,7 +58,7 @@ const savePageContent = async (pageContent, sillyDogId) => {
 };
 
 const getPageContent = async (sillyDogId) => {
-  const url = `https://graceful-wylma-silly-dog-wiki-1906a282.koyeb.app/sillyDogs/${sillyDogId}/pagecontent`;
+  const url = `https://graceful-wylma-silly-dog-wiki-1906a282.koyeb.app:8000/sillyDogs/${sillyDogId}/pagecontent`;
   
   try {
     const response = await axios.get(url);
