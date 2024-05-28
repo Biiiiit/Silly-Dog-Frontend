@@ -36,7 +36,24 @@ const getManySillyDogs = async () => {
 };
 
 const saveSillyDog = async (name) => {
-  const data = { name }; // Create a JSON object with the name property
+  const data = {
+    image: "", // Empty image URL
+    name: name,
+    description: "", // Empty description
+    status: "", // Empty status
+    nationality: "", // Empty nationality
+    aliases: [], // Empty aliases array
+    relatives: [], // Empty relatives array
+    affiliation: [],
+    occupation: "", // Empty occupation
+    dateOfBirth: "", // Empty date of birth
+    placeOfBirth: "", // Empty place of birth
+    maritalStatus: "", // Empty marital status
+    gender: "", // Empty gender
+    height: "", // Empty height
+    weight: "", // Empty weight
+    media: [],
+  };
   return await axios.post(url, data).then((response) => response.data);
 };
 
