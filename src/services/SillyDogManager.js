@@ -44,7 +44,12 @@ const savePageContent = async (pageContent, sillyDogId) => {
   const url = `https://graceful-wylma-silly-dog-wiki-1906a282.koyeb.app/sillyDogs/${sillyDogId}/pagecontent`;
 
   try {
-    const response = await axios.post(url, pageContent, {
+    const requestData = {
+      content: pageContent,
+      sillyDogId: sillyDogId // Include the sillyDogId in the JSON object
+    };
+
+    const response = await axios.post(url, requestData, {
       headers: {
         'Content-Type': 'application/json',
       },
