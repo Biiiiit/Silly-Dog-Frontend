@@ -46,8 +46,8 @@ const savePageContent = async (pageContent, sillyDogId) => {
   try {
     const response = await axios.post(url, pageContent, {
       headers: {
-        'Content-Type': 'text/plain', // Set Content-Type to text/plain for plaintext content
-      },
+        'Content-Type': 'application/json',
+      },s      
     });
     return response.data;
   } catch (error) {
