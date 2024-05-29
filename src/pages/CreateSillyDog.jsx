@@ -85,7 +85,7 @@ const CreateDogPage = () => {
     const fetchSillyDogData = async () => {
       let nameDecoded = decodeURIComponent(name.replace(/\+/g, " "));
       try {
-        const fetchedDogInfo = await SillyDogManager.getSillyDog(nameDecoded);
+        const fetchedDogInfo = await SillyDogManager.getSillyDog(name);
         const dogData = fetchedDogInfo || defaultDogInfo;
         const isEmpty = Object.values(dogData).some((value) => value === "");
 
