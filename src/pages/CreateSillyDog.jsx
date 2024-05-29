@@ -29,6 +29,7 @@ const CreateDogPage = () => {
   );
   const [showEditor, setShowEditor] = useState(false);
   const [pageContent, setPageContent] = useState("");
+  const [pageContentData, setPageContentData] = useState("");
   const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
   const [dogInfo, setDogInfo] = useState(""); // Initialize dogInfo state
   const [isDogInfoEmpty, setIsDogInfoEmpty] = useState(true); // Initialize isDogInfoEmpty state
@@ -90,13 +91,14 @@ const CreateDogPage = () => {
         const dogData = fetchedDogInfo || defaultDogInfo;
         const isEmpty = Object.values(dogData).some((value) => value === "");
 
+        setPageContentData(dogData.pageContent);
         setDogInfo(dogData);
         console.log(dogData);
         setIsDogInfoEmpty(isEmpty);
-        console.log(dogInfo.pageContent.data.pageContent);
 
-        setPageContent(dogInfo.pageContent.data.pageContent);
-        
+        if (pageContentData) {
+          setPageContent(pageContentData.pageContent);
+        }
       } catch (error) {
         console.error("Error fetching dog info or page content:", error);
         setDogInfo(defaultDogInfo);
