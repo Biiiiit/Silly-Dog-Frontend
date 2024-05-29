@@ -80,7 +80,7 @@ const savePageContent = async (pageContent, sillyDogId) => {
 };
 
 const getPageContent = async (sillyDogId) => {
-  const url = `https://silly-dog-api.ew.r.appspot.com/${sillyDogId}/pagecontent`;
+  const url = `https://silly-dog-api.ew.r.appspot.com/sillyDogs/${sillyDogId}/pagecontent`;
   
   try {
     const response = await axios.get(url);
