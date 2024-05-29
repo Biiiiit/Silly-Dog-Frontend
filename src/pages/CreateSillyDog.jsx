@@ -91,6 +91,7 @@ const CreateDogPage = () => {
         const isEmpty = Object.values(dogData).some((value) => value === "");
 
         setDogInfo(dogData);
+        console.log(dogData);
         setIsDogInfoEmpty(isEmpty);
 
         if (dogData.pageContent) {
