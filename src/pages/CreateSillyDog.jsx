@@ -93,11 +93,11 @@ const CreateDogPage = () => {
 
         setDogInfo(dogData);
         console.log(dogData);
-        setPageContentData(dogData.pageContent);
-        console.log(pageContentData);
         setIsDogInfoEmpty(isEmpty);
-        setPageContent(pageContentData.pageContent);
-        
+
+        if (dogData.pageContent) {
+          setPageContent(dogData.pageContent.pageContent);
+        }
       } catch (error) {
         console.error("Error fetching dog info or page content:", error);
         setDogInfo(defaultDogInfo);
