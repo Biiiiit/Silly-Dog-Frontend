@@ -208,9 +208,6 @@ const CreateDogPage = () => {
     // Replace all <p><br/></p> with <br>
     html = html.replace(/<p><br\s*\/?><\/p>/g, "<br>");
 
-    // Replace remaining <p> tags with a single <br> each
-    html = html.replace(/<p>/g, "<br>");
-
     console.log(html); // Log the HTML to check if it's correct
 
     // Save the HTML content by updating the state
