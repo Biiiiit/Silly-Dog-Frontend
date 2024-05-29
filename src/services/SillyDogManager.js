@@ -17,7 +17,7 @@ const getSillyDog = async (name) => {
       const pageContentResponse = await axios.get(`${url}/${sillyDog.id}/pagecontent`);
       
       if (pageContentResponse.data) {
-        sillyDog.pageContent = pageContentResponse;
+        sillyDog.pageContent = pageContentResponse.data; // Assign only the data to sillyDog.pageContent
       }
       
       return sillyDog;
