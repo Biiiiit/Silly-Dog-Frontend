@@ -94,7 +94,7 @@ const CreateDogPage = () => {
         console.log(dogData);
         setIsDogInfoEmpty(isEmpty);
 
-        if (dogData.pageContent) {
+        if (dogData.dogData.pageContent.data.pageContent) {
           setPageContent(dogData.pageContent.data.pageContent);
         }
       } catch (error) {
