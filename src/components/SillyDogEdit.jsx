@@ -236,7 +236,7 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
             className="edit-input"
             type="text"
             name="aliases"
-            value={editedDogInfo.aliases ? editedDogInfo.aliases.join(", ") : ""}
+            value={editedDogInfo.aliases && Array.isArray(editedDogInfo.aliases) ? editedDogInfo.aliases.join(", ") : ""}
             onChange={handleInputChange}
           />
         </label>
@@ -254,7 +254,7 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
             className="edit-input"
             type="text"
             name="relatives"
-            value={editedDogInfo.relatives ? editedDogInfo.relatives.join(", ") : ""}
+            value={editedDogInfo.relatives && Array.isArray(editedDogInfo.relatives) ? editedDogInfo.relatives.join(", ") : ""}
             onChange={handleInputChange}
           />
         </label>
@@ -272,7 +272,7 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
             className="edit-input"
             type="text"
             name="affiliations"
-            value={editedDogInfo.affiliation ? editedDogInfo.affiliation.join(", ") : ""}
+            value={editedDogInfo.affiliation && Array.isArray(editedDogInfo.affiliation) ? editedDogInfo.affiliation.join(", ") : ""}
             onChange={handleInputChange}
           />
         </label>
