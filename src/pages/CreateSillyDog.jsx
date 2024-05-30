@@ -217,11 +217,13 @@ const CreateDogPage = () => {
     toggleEditor();
 
     // Update the page content
-    if (dogInfo && dogInfo.id && html) {
+    console.log(dogInfo.id);
+    console.log(pageContentData.id);
+    if (dogInfo && pageContentData && html) {
       try {
         // Construct the updatePageContentRequest object
         const updatePageContentRequest = {
-          id: dogInfo.pageContent.data.id,
+          id: pageContentData.id,
           content: html,
           sillyDogId: dogInfo.id // Assuming sillyDogId is the same as the dogInfo.id
         };
