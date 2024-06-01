@@ -27,7 +27,9 @@ function Navbar() {
                       Navigation
                     </a>
                     <div className="dropdown-content">
-                      <a href="#">Link 1</a>
+                      <Link className="view-link" to="/ViewSillyDogs">
+                        Look at Silly Dogs
+                      </Link>
                       <a href="#">Link 2</a>
                       <a href="#">Link 3</a>
                     </div>

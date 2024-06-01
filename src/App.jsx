@@ -2,6 +2,7 @@ import './App.css';
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import CreateSillyDog from "./pages/CreateSillyDog";
+import ViewSillyDogs from "./pages/ViewSillyDogs";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from './components/Navbar';
 
@@ -14,6 +15,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/CreateSillyDog/:name" element={<CreateSillyDog />} />
+            <Route path='/ViewSillyDogs' element={<ViewSillyDogs/>}/>
           </Routes>
         </Router>
       </div>
