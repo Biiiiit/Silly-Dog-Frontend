@@ -31,13 +31,13 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
     } else {
       setImageUrl(SillyDoggy);
     }
-  }, [dogInfo, setImageUrl]);  
+  }, [dogInfo, setImageUrl]);
 
   useEffect(() => {
     if (media && media[0]) {
       const file = media[0];
       const reader = new FileReader();
-  
+
       reader.onload = async (event) => {
         const newImageUrl = event.target.result;
         if (newImageUrl !== editedDogInfo.image) { // Check if the new image URL is different
@@ -48,10 +48,10 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
           setImageUrl(newImageUrl); // Update imageUrl state with the new image URL
         }
       };
-  
+
       reader.readAsDataURL(file);
     }
-  }, [media, editedDogInfo.image]);  
+  }, [media, editedDogInfo.image]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -75,24 +75,21 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
       for (let i = 0; i < media.length; i++) {
         const file = media[i];
         const fileType = file.type.split("/")[0];
-  
+
         if (fileType === "image") {
-          // Use the current location reference for updating
-          const currentLocationReference = editedDogInfo.media[i]?.locationReference;
-  
-          if (!currentLocationReference) {
-            console.error("Error: Location reference not found for media item", i);
-            continue;
+          let locationReference = editedDogInfo.media[i]?.locationReference;
+
+          if (!locationReference) {
+            locationReference = `${v4()}.${file.name.split('.').pop()}`;
           }
-  
+
           mediaFiles.push({
-            locationReference: currentLocationReference,
+            locationReference: locationReference,
             order: i + 1,
           });
-  
-          // Upload the new image file if available
+
           if (file) {
-            let storageRef = ref(imageUploader, currentLocationReference);
+            let storageRef = ref(imageUploader, locationReference);
             try {
               await uploadBytes(storageRef, file);
             } catch (error) {
@@ -236,7 +233,7 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
             className="edit-input"
             type="text"
             name="aliases"
-            value={editedDogInfo.aliases ? editedDogInfo.aliases.join(", ") : ""}
+            value={editedDogInfo.aliases && Array.isArray(editedDogInfo.aliases) ? editedDogInfo.aliases.join(", ") : ""}
             onChange={handleInputChange}
           />
         </label>
@@ -254,7 +251,7 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
             className="edit-input"
             type="text"
             name="relatives"
-            value={editedDogInfo.relatives ? editedDogInfo.relatives.join(", ") : ""}
+            value={editedDogInfo.relatives && Array.isArray(editedDogInfo.relatives) ? editedDogInfo.relatives.join(", ") : ""}
             onChange={handleInputChange}
           />
         </label>
@@ -272,7 +269,7 @@ const SillyDogEdit = ({ dogInfo, onUpdateDogInfo, onSave, onClose }) => {
             className="edit-input"
             type="text"
             name="affiliations"
-            value={editedDogInfo.affiliation ? editedDogInfo.affiliation.join(", ") : ""}
+            value={editedDogInfo.affiliation && Array.isArray(editedDogInfo.affiliation) ? editedDogInfo.affiliation.join(", ") : ""}
             onChange={handleInputChange}
           />
         </label>

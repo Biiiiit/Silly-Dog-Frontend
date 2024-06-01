@@ -29,6 +29,7 @@ const CreateDogPage = () => {
   );
   const [showEditor, setShowEditor] = useState(false);
   const [pageContent, setPageContent] = useState("");
+  const [pageContentData, setPageContentData] = useState("");
   const [showCustomLinkModal, setShowCustomLinkModal] = useState(false); // Define showCustomLinkModal state variable
   const [dogInfo, setDogInfo] = useState(""); // Initialize dogInfo state
   const [isDogInfoEmpty, setIsDogInfoEmpty] = useState(true); // Initialize isDogInfoEmpty state
@@ -84,16 +85,18 @@ const CreateDogPage = () => {
   useEffect(() => {
     const fetchSillyDogData = async () => {
       let nameDecoded = decodeURIComponent(name.replace(/\+/g, " "));
+      console.log(nameDecoded);
       try {
         const fetchedDogInfo = await SillyDogManager.getSillyDog(nameDecoded);
         const dogData = fetchedDogInfo || defaultDogInfo;
         const isEmpty = Object.values(dogData).some((value) => value === "");
 
         setDogInfo(dogData);
+        console.log(dogData);
         setIsDogInfoEmpty(isEmpty);
 
         if (dogData.pageContent) {
-          setPageContent(dogData.pageContent.data.pageContent);
+          setPageContent(dogData.pageContent.pageContent);
         }
       } catch (error) {
         console.error("Error fetching dog info or page content:", error);
@@ -205,9 +208,6 @@ const CreateDogPage = () => {
     // Replace all <p><br/></p> with <br>
     html = html.replace(/<p><br\s*\/?><\/p>/g, "<br>");
 
-    // Replace remaining <p> tags with a single <br> each
-    html = html.replace(/<p>/g, "<br>");
-
     console.log(html); // Log the HTML to check if it's correct
 
     // Save the HTML content by updating the state
@@ -217,11 +217,13 @@ const CreateDogPage = () => {
     toggleEditor();
 
     // Update the page content
-    if (dogInfo && dogInfo.id && html) {
+    console.log(dogInfo.id);
+    console.log(pageContentData.id);
+    if (dogInfo && pageContentData && html) {
       try {
         // Construct the updatePageContentRequest object
         const updatePageContentRequest = {
-          id: dogInfo.pageContent.data.id,
+          id: pageContentData.id,
           content: html,
           sillyDogId: dogInfo.id // Assuming sillyDogId is the same as the dogInfo.id
         };

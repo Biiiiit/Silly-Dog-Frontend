@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = "https://graceful-wylma-silly-dog-wiki-1906a282.koyeb.app/sillyDogs";
+const url = "https://silly-dog-api.ew.r.appspot.com/sillyDogs";
 // Make sure to set the Content-Type header to application/json
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
@@ -17,7 +17,7 @@ const getSillyDog = async (name) => {
       const pageContentResponse = await axios.get(`${url}/${sillyDog.id}/pagecontent`);
       
       if (pageContentResponse.data) {
-        sillyDog.pageContent = pageContentResponse;
+        sillyDog.pageContent = pageContentResponse.data; // Assign only the data to sillyDog.pageContent
       }
       
       return sillyDog;
@@ -36,17 +36,39 @@ const getManySillyDogs = async () => {
 };
 
 const saveSillyDog = async (name) => {
-  const data = { name }; // Create a JSON object with the name property
+  const data = {
+    image: "", // Empty image URL
+    name: name,
+    description: "", // Empty description
+    status: "", // Empty status
+    nationality: "", // Empty nationality
+    aliases: [], // Empty aliases array
+    relatives: [], // Empty relatives array
+    affiliation: [],
+    occupation: "", // Empty occupation
+    dateOfBirth: "", // Empty date of birth
+    placeOfBirth: "", // Empty place of birth
+    maritalStatus: "", // Empty marital status
+    gender: "", // Empty gender
+    height: "", // Empty height
+    weight: "", // Empty weight
+    media: [],
+  };
   return await axios.post(url, data).then((response) => response.data);
 };
 
 const savePageContent = async (pageContent, sillyDogId) => {
-  const url = `https://graceful-wylma-silly-dog-wiki-1906a282.koyeb.app/sillyDogs/${sillyDogId}/pagecontent`;
+  const url = `https://silly-dog-api.ew.r.appspot.com/sillyDogs/${sillyDogId}/pagecontent`;
 
   try {
-    const response = await axios.post(url, pageContent, {
+    const requestData = {
+      content: pageContent,
+      sillyDogId: sillyDogId // Include the sillyDogId in the JSON object
+    };
+
+    const response = await axios.post(url, requestData, {
       headers: {
-        'Content-Type': 'text/plain', // Set Content-Type to text/plain for plaintext content
+        'Content-Type': 'application/json',
       },
     });
     return response.data;
@@ -58,7 +80,7 @@ const savePageContent = async (pageContent, sillyDogId) => {
 };
 
 const getPageContent = async (sillyDogId) => {
-  const url = `https://graceful-wylma-silly-dog-wiki-1906a282.koyeb.app/sillyDogs/${sillyDogId}/pagecontent`;
+  const url = `https://silly-dog-api.ew.r.appspot.com/sillyDogs/${sillyDogId}/pagecontent`;
   
   try {
     const response = await axios.get(url);
