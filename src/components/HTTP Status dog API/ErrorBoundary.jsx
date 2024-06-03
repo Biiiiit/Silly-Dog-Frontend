@@ -1,5 +1,6 @@
 import React from "react";
 import ErrorDisplay from "./ErrorDisplay";
+import axios from "axios";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -8,15 +9,8 @@ class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    // Check if the error is a network error and set a custom error code
-    let errorCode = 500;
-    if (error.code === "ERR_NETWORK") {
-      errorCode = 503; // Service Unavailable for network errors
-    } else if (error.code) {
-      errorCode = error.code;
-    }
     // Update state so the next render will show the fallback UI.
-    return { hasError: true, errorCode: errorCode };
+    return { hasError: true, errorCode: 500 };
   }
 
   componentDidCatch(error, errorInfo) {
@@ -26,27 +20,48 @@ class ErrorBoundary extends React.Component {
     this.setState({ hasError: true, errorCode: 500 }); // You can set a custom error code here
   }
 
+  handleErrorClose = () => {
+    this.setState({ hasError: false });
+  };
+
   componentDidMount() {
-    // Add listener for uncaught errors
-    window.onerror = (message, source, lineno, colno, error) => {
-      // Log the error to the console
-      console.error("Uncaught error caught by ErrorBoundary:", error);
-      // Update state to display the fallback UI
-      this.setState({ hasError: true, errorCode: 500 }); // You can set a custom error code here
-    };
+    // Intercept Axios errors globally
+    this.responseInterceptor = axios.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      (error) => {
+        // Log the error to the console
+        console.error("Axios error caught by ErrorBoundary:", error);
+        // Check if the error code is ERR_NETWORK and update it to 500
+        const errorCode =
+          error.code === "ERR_NETWORK" ? 500 : error.code || 500;
+        // Update state to display the fallback UI
+        this.setState({ hasError: true, errorCode: errorCode });
+        return Promise.reject(error);
+      }
+    );
   }
 
   componentWillUnmount() {
-    // Remove the listener when the component is unmounted
-    window.onerror = null;
+    // Remove Axios interceptor when the component is unmounted
+    axios.interceptors.response.eject(this.responseInterceptor);
   }
 
   render() {
-    if (this.state.hasError) {
-      // Render any custom fallback UI
-      return <ErrorDisplay errorCode={this.state.errorCode} />;
+    const { hasError, errorCode } = this.state;
+
+    if (hasError) {
+      // Render the error popup
+      return (
+        <>
+          {this.props.children}
+          <ErrorDisplay errorCode={errorCode} onClose={this.handleErrorClose} />
+        </>
+      );
     }
 
+    // Render the children
     return this.props.children;
   }
 }

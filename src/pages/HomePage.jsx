@@ -15,52 +15,59 @@ const HomePage = () => {
   };
 
   const handleNextButtonClick = async () => {
-  try {
-    // Attempt to get the SillyDog
-    const dog = await SillyDogManager.getSillyDog(inputValue);
+    try {
+      // Attempt to get the SillyDog
+      const dog = await SillyDogManager.getSillyDog(inputValue);
 
-    if (dog) {
-      // Extract the name and ID from the dog object
-      const { name, id } = dog;
-
-      // Check if PageContent exists for the SillyDogID
-      let existingPageContent = await SillyDogManager.getPageContent(id);
-
-      // If PageContent doesn't exist, create a placeholder text
-      if (!existingPageContent) {
-        existingPageContent = await SillyDogManager.savePageContent("<h1>Description</h1>", id);
-      }
-
-      // Navigate to CreateSillyDog page with the name appended to the URL
-      navigate(`/CreateSillyDog/${name}`);
-    } else {
-      // If the dog doesn't exist, attempt to save the SillyDog
-      const savedDog = await SillyDogManager.saveSillyDog(inputValue);
-
-      if (savedDog) {
-        // Extract the name and ID from the saved dog object
-        const { name, id } = savedDog;
+      if (dog) {
+        // Extract the name and ID from the dog object
+        const { name, id } = dog;
 
         // Check if PageContent exists for the SillyDogID
         let existingPageContent = await SillyDogManager.getPageContent(id);
 
         // If PageContent doesn't exist, create a placeholder text
         if (!existingPageContent) {
-          existingPageContent = await SillyDogManager.savePageContent("<h1>Description</h1>", id);
+          existingPageContent = await SillyDogManager.savePageContent(
+            "<h1>Description</h1>",
+            id
+          );
         }
 
         // Navigate to CreateSillyDog page with the name appended to the URL
         navigate(`/CreateSillyDog/${name}`);
       } else {
-        // Handle the case where savedDog is empty
-        console.error("Error saving silly dog: No data returned");
+        // If the dog doesn't exist, attempt to save the SillyDog
+        const savedDog = await SillyDogManager.saveSillyDog(inputValue);
+
+        if (savedDog) {
+          // Extract the name and ID from the saved dog object
+          const { name, id } = savedDog;
+
+          // Check if PageContent exists for the SillyDogID
+          let existingPageContent = await SillyDogManager.getPageContent(id);
+
+          // If PageContent doesn't exist, create a placeholder text
+          if (!existingPageContent) {
+            existingPageContent = await SillyDogManager.savePageContent(
+              "<h1>Description</h1>",
+              id
+            );
+          }
+
+          // Navigate to CreateSillyDog page with the name appended to the URL
+          navigate(`/CreateSillyDog/${name}`);
+        } else {
+          // Handle the case where savedDog is empty
+          console.error("Error saving silly dog: No data returned");
+        }
       }
+    } catch (error) {
+      // Handle errors
+      console.error("Error saving or retrieving silly dog:", error);
+      throw error.code;
     }
-  } catch (error) {
-    // Handle errors
-    console.error("Error saving or retrieving silly dog:", error);
-  }
-};
+  };
 
   return (
     <ContentContainer>

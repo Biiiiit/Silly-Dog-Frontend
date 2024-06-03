@@ -7,12 +7,6 @@ import Navbar from "./components/Navbar";
 import ErrorBoundary from "./components/HTTP Status dog API/ErrorBoundary";
 
 function App() {
-  // Global error handler
-  window.addEventListener("error", function (event) {
-    // Log the error to an error reporting service
-    console.error("Global error caught:", event.error);
-    // You can also set state in the ErrorBoundary here if necessary
-  });
   return (
     <ErrorBoundary>
       <div className="App">
