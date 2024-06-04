@@ -36,6 +36,7 @@
     "react-markdown": "^9.0.1",
     "react-router-dom": "^6.22.3",
     "react-slate": "^0.1.0",
+    "three": "^0.165.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
