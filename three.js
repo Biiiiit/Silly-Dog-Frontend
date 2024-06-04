@@ -2,129 +2,131 @@ import * as THREE from "three";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 
-// Scene setup
+// Create a scene
 const scene = new THREE.Scene();
+
+// Create a camera
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
+camera.position.set(0, 0, 10);
 
-const renderer = new THREE.WebGLRenderer();
+// Create a renderer
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Function to create text and add to scene
-function createText() {
-  const fontLoader = new FontLoader();
-  fontLoader.load(
-    "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
-    function (font) {
-      const text = "Silly Dogs";
-      const letters = [];
+// Add lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
 
-      // Create individual letter meshes
-      for (let i = 0; i < text.length; i++) {
-        const letterGeometry = new TextGeometry(text[i], {
-          font: font,
-          size: 1,
-          depth: 0.2,
-          curveSegments: 12,
-          bevelEnabled: true,
-          bevelThickness: 0.1,
-          bevelSize: 0.1,
-          bevelOffset: 0,
-          bevelSegments: 5,
-        });
+const pointLight = new THREE.PointLight(0xffffff, 1);
+pointLight.position.set(5, 5, 5);
+scene.add(pointLight);
 
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const letterMesh = new THREE.Mesh(letterGeometry, material);
+// Load font and create text
+const loader = new FontLoader();
+loader.load(
+  "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
+  function (font) {
+    const textMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
 
-        const offsetX = (i - (text.length - 1) / 2) * 0.5; // Spread letters evenly
-        const offsetY = -25; // Start from center vertically
-        const offsetZ = 10; // Start behind the camera
+    // Create text geometry for the letter "S"
+    const textGeometry = new TextGeometry("S", {
+      font: font,
+      size: 1,
+      depth: 0.2,
+      curveSegments: 12,
+      bevelEnabled: true,
+      bevelThickness: 0.03,
+      bevelSize: 0.02,
+      bevelOffset: 0,
+      bevelSegments: 5,
+    });
+    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+    scene.add(textMesh);
 
-        letterMesh.position.set(offsetX, offsetY, offsetZ);
-        scene.add(letterMesh);
-        letters.push(letterMesh);
-      }
+    // Define points for the curve
+    const points = [];
+    points.push(new THREE.Vector3(-1.5, -2, 10)); // Starting point behind the camera
+    points.push(new THREE.Vector3(-1.3, -0.1, 8));
+    points.push(new THREE.Vector3(-1.25, 0.35, 7));
+    points.push(new THREE.Vector3(-2, 0.2, 6));
+    points.push(new THREE.Vector3(-2.5, 0.2, 6)); // Ending point
 
-      // Function to animate a single letter
-      function animateLetter(letter, targetX, targetY, targetZ, delay) {
-        const startTime = performance.now() + delay;
+    // Create the curve
+    const curve = new THREE.CatmullRomCurve3(points);
 
-        function animate() {
-          const elapsedTime = performance.now() - startTime;
+    // Animate the "S" letter along the curve
+    const animationDuration = 10; // Duration of animation in seconds
+    const numPoints = 100; // Number of points to interpolate along the curve
+    let animationProgress = 0; // Start progress at 0
+    let animationStarted = false; // Track if animation has started
 
-          if (elapsedTime < 0) {
-            requestAnimationFrame(animate);
-            return;
-          }
+    // Start the animation loop
+    const animate = function () {
+      requestAnimationFrame(animate);
+      TWEEN.update(); // Update the Tween.js animation
 
-          const t = Math.min(elapsedTime / 2000, 1); // Animation duration 2 seconds
-          const bounce = Math.abs(Math.sin(t * Math.PI * 2.5) * (1 - t)); // Bounce effect
+      // Only animate the letter if animation hasn't started yet
+      if (!animationStarted) {
+        // Calculate position along the curve
+        const pointOnCurve = curve.getPointAt(animationProgress);
+        // Update position of the "S" letter
+        textMesh.position.copy(pointOnCurve);
+        renderer.render(scene, camera);
 
-          const currentX = letter.position.x;
-          const currentY = letter.position.y;
-          const currentZ = letter.position.z;
-
-          // Calculate curved path towards target position
-          const newX = THREE.MathUtils.lerp(
-            currentX,
-            targetX,
-            t * (1 - bounce)
-          );
-          const newY = THREE.MathUtils.lerp(
-            currentY,
-            targetY,
-            t * (1 - bounce)
-          );
-          const newZ = THREE.MathUtils.lerp(
-            currentZ,
-            targetZ,
-            t * (1 - bounce)
-          ); // Move letter further away
-
-          letter.position.set(newX, newY, newZ);
-
-          if (t < 1) {
-            requestAnimationFrame(animate);
-          }
+        animationProgress += 0.001; // Increment animation progress
+        if (animationProgress > 1) {
+          animationStarted = true; // Set animation started to true when animation completes
         }
-
-        animate();
       }
+    };
 
-      // Animate each letter with a delay
-      const delay = 200; // Delay between letters
-      const targetZ = -1; // Move letters further away
+    animate();
+  }
+);
 
-      for (let i = 0; i < letters.length; i++) {
-        const offsetX = (i - (text.length - 1) / 2) * 1.2; // Reduce spacing
-        const offsetY = 0; // Move to the center vertically
-        const targetX = offsetX;
-        const targetY = offsetY;
-        animateLetter(letters[i], targetX, targetY, targetZ, delay * i);
-      }
-    }
-  );
-}
+// Define points for the curve
+const points = [];
+points.push(new THREE.Vector3(-1.5, -2, 10)); // Starting point behind the camera
+points.push(new THREE.Vector3(-1.3, -0.1, 8));
+points.push(new THREE.Vector3(-1.25, 0.35, 7.5));
+points.push(new THREE.Vector3(-2, 0.2, 6.5));
+points.push(new THREE.Vector3(-2.5, 0.2, 6.5)); // Ending point
 
-// Initialize camera position
-camera.position.z = 5;
+// Create small spheres as indicators for each point on the curve
+points.forEach((point) => {
+  const geometry = new THREE.SphereGeometry(0.1, 8, 8);
+  const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+  const sphere = new THREE.Mesh(geometry, material);
+  sphere.position.copy(point);
+  scene.add(sphere);
+});
 
-// Call function to create text and trigger animation
-createText();
+// Create the curve
+const curve = new THREE.CatmullRomCurve3(points);
 
-// Add basic lighting
-const light = new THREE.AmbientLight(0x404040); // soft white light
-scene.add(light);
+// Create the geometry for the curve
+const curveGeometry = new THREE.BufferGeometry().setFromPoints(
+  curve.getPoints(50)
+);
 
-// Render loop
-function render() {
-  requestAnimationFrame(render);
-  renderer.render(scene, camera);
-}
+// Create the material for the curve (optional)
+const curveMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
 
-render();
+// Create the curve object
+const curveObject = new THREE.Line(curveGeometry, curveMaterial);
+
+// Add the curve object to the scene
+scene.add(curveObject);
+
+// Handle window resize
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
