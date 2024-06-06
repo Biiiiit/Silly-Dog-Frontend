@@ -44,6 +44,32 @@ cameraLight.shadow.mapSize.height = 1024; // Optional: Increase map size for smo
 cameraLight.shadow.camera.near = 0.5; // Optional: Adjust near and far values for shadow camera
 cameraLight.shadow.camera.far = 500; // Optional: Adjust near and far values for shadow camera
 
+// Create a flashing text element
+const flashingText = document.createElement('div');
+flashingText.textContent = 'Press any button to continue...';
+flashingText.style.position = 'absolute';
+flashingText.style.top = '20px';
+flashingText.style.left = '50%';
+flashingText.style.transform = 'translateX(-50%)';
+flashingText.style.color = 'red'; // Change color as needed
+document.body.appendChild(flashingText);
+
+// Function to remove the flashing text
+const removeFlashingText = () => {
+  document.body.removeChild(flashingText);
+  // Start the animation loop after the flashing text is removed
+  // Initialize the letters and start the animation loop
+  initLetters().then(() => {
+    animate();
+  });
+};
+
+// Listen for keydown event
+window.addEventListener('keydown', removeFlashingText);
+
+// Listen for mousedown event
+window.addEventListener('mousedown', removeFlashingText);
+
 // Define colors for each of the 23 frames
 const colors = [
   "#bd8dbd", "#bd8dbd", "#bd8dbd", "#bd8dbd", "#bd8dbd", "#bd8dbd",
@@ -83,8 +109,40 @@ async function initLetters() {
   }
 }
 
+// Create the AudioContext 
+const audioContext = new (window.AudioContext || window.AudioContext)();
+
+// Boolean variable to track if the sound has been played
+let soundPlayed = false;
+
 // Function to animate a letter
-const animateLetter = (font, letter, initialPosition, pathPoints, delay) => {
+const animateLetter = async (font, letter, initialPosition, pathPoints, delay) => {
+  // Load the sound file asynchronously
+  const response = await fetch('src/assets/Intro Sound.mp3');
+  const arrayBuffer = await response.arrayBuffer();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+  // Check if the sound has been played already
+  if (!soundPlayed) {
+    // Create an audio buffer source node
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+
+    // Create a gain node to adjust the volume
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.5; // Adjust the volume here (0.5 is half volume)
+
+    // Connect the source node to the gain node and the gain node to the destination
+    source.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // Play the sound once
+    source.start();
+
+    // Set the boolean variable to true to indicate that the sound has been played
+    soundPlayed = true;
+  }
+
   const textMaterial = new THREE.MeshPhongMaterial({ color: new THREE.Color(colors[0]) });
   const textGeometry = new TextGeometry(letter, {
     font: font,
@@ -213,17 +271,72 @@ const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
 composer.addPass(pixelationPass);
 
+// Arrays for custom parameters (radius, color, opacity)
+const radii = [0.45, 0.65, 1, 1.5, 2.5, 3];
+const circleColors = ['#ffffff', '#aa33b3', '#a602b9', '#8f00be', "#7400b9", '#5d00c0'];
+const opacities = [0.5, 1, 0.5, 0.9, 0.9, 0.9];
+
+// Create an array to store the fakelight meshes
+const fakelights = [];
+
+// Define the target position for the fakelights
+const endPosition = new THREE.Vector3(8, 1.1, 6.21);
+
+// Create a single delay for the entire animation
+const totalDelay = 1900; // 2000 milliseconds = 2 seconds
+
 // Start the animation loop
 const animate = function () {
   requestAnimationFrame(animate);
   TWEEN.update();
   composer.render();
-};
 
-// Initialize the letters and start the animation loop
-initLetters().then(() => {
-  animate();
-});
+  // Check if the fakelights have been created
+  if (fakelights.length === 0) {
+    // Create fakelights with individual parameters
+    for (let i = 0; i < radii.length; i++) {
+      const geometry = new THREE.CircleGeometry(radii[i]);
+      const material = new THREE.MeshBasicMaterial({
+        color: circleColors[i],
+        transparent: true,
+        opacity: opacities[i],
+        blending: THREE.AdditiveBlending // Use additive blending
+      });
+
+      const fakelight = new THREE.Mesh(geometry, material);
+      fakelight.position.set(-7, 1.1, 6.21);
+
+      scene.add(fakelight);
+      fakelights.push(fakelight);
+
+      // Create tweens to animate the position of fakelights with a single delay
+      for (let i = 0; i < fakelights.length; i++) {
+        let delay = totalDelay;
+        if (i > 1) {
+          // Apply custom delays for each fakelight after the first two circles
+          switch (i) {
+            case 2:
+              delay += 40; // Add a 200ms delay for the third circle
+              break;
+            case 3:
+              delay += 104; // Add a 400ms delay for the fourth circle
+              break;
+            case 4:
+              delay += 220; // Add a default delay of 1000ms for circles after the fourth one
+              break;
+            case 5:
+              delay += 300;
+              break;
+          }
+        }
+        new TWEEN.Tween(fakelights[i].position)
+          .to({ x: endPosition.x }, 2000) // Move along the x-axis over 5000 ms
+          .delay(delay) // Apply the calculated delay
+          .start(); // Start the tween
+      }
+    }
+  }
+};
 
 // Handle window resize
 window.addEventListener("resize", () => {
