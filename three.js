@@ -60,6 +60,8 @@ const interpolateColor = (color1, color2, factor) => {
   return c1.lerp(c2, factor);
 };
 
+const animatedLetters = [];
+
 // Function to animate a letter
 const animateLetter = (letter, initialPosition, pathPoints, delay) => {
   const loader = new FontLoader();
@@ -84,7 +86,6 @@ const animateLetter = (letter, initialPosition, pathPoints, delay) => {
 
     const curve = new THREE.CatmullRomCurve3(pathPoints);
     const animationDuration = 783;
-
     const animationTween = new TWEEN.Tween({ progress: 0 })
       .to({ progress: 1 }, animationDuration)
       .onUpdate((obj) => {
@@ -141,6 +142,8 @@ const animateLetter = (letter, initialPosition, pathPoints, delay) => {
     setTimeout(() => {
       animationTween.start();
     }, delay);
+    // Store the modified letter object in the new array
+    animatedLetters.push({ letter, initialPosition, pathPoints, delay, mesh: textMesh });
   });
 };
 
@@ -153,7 +156,7 @@ const letters = [
   { letter: "Y", initialPosition: new THREE.Vector3(-0.6, -2, 10), pathPoints: [new THREE.Vector3(-0.6, -2, 10), new THREE.Vector3(-0.7, 0.3, 8), new THREE.Vector3(-0.8, 0.75, 7), new THREE.Vector3(-1.1, 0.3, 6), new THREE.Vector3(-1.4, 0.3, 6)], delay: 350 },
   { letter: "D", initialPosition: new THREE.Vector3(-0.4, -2, 10), pathPoints: [new THREE.Vector3(-0.4, -2, 10), new THREE.Vector3(-0.5, 0.3, 8), new THREE.Vector3(-0.6, 0.75, 7), new THREE.Vector3(-0.8, 0.3, 6), new THREE.Vector3(-0.4, 0.3, 6)], delay: 400 },
   { letter: "O", initialPosition: new THREE.Vector3(0.95, -2, 10), pathPoints: [new THREE.Vector3(-0.25, -2, 10), new THREE.Vector3(-0.15, 0.3, 8), new THREE.Vector3(-0.05, 0.75, 7), new THREE.Vector3(0.15, 0.3, 6), new THREE.Vector3(0.55, 0.3, 6)], delay: 450 },
-  { letter: "G", initialPosition: new THREE.Vector3(0, -2, 10), pathPoints: [new THREE.Vector3(0.25, -2, 10), new THREE.Vector3(0.45, 0.3, 8), new THREE.Vector3(0.65, 0.75, 7), new THREE.Vector3(1.25, 0.3, 6), new THREE.Vector3(1.65, 0.3, 6)], delay: 500 },
+  { letter: "G", initialPosition: new THREE.Vector3(0.96, -2, 10), pathPoints: [new THREE.Vector3(0.25, -2, 10), new THREE.Vector3(0.45, 0.3, 8), new THREE.Vector3(0.65, 0.75, 7), new THREE.Vector3(1.25, 0.3, 6), new THREE.Vector3(1.65, 0.3, 6)], delay: 500 },
   { letter: "S", initialPosition: new THREE.Vector3(3.1, -2, 10), pathPoints: [new THREE.Vector3(1, -2, 10), new THREE.Vector3(0.8, 0.3, 8), new THREE.Vector3(1.3, 0.75, 7), new THREE.Vector3(2.1, 0.3, 6), new THREE.Vector3(2.7, 0.3, 6)], delay: 550 },
 ];
 
@@ -161,6 +164,43 @@ const letters = [
 letters.forEach(({ letter, initialPosition, pathPoints, delay }) => {
   animateLetter(letter, initialPosition, pathPoints, delay);
 });
+
+// Calculate the total animation duration of all letters
+const totalAnimationDuration = letters.reduce((max, { delay }) => Math.max(max, delay), 0) + 1000; // Add extra time for the spotlight to start after all letters finish animating
+
+// Start the color transition effect after the bounce is completed
+setTimeout(startColorTransition, totalAnimationDuration);
+
+// Modify the startColorTransition function to create a spotlight effect with a localized circle
+function startColorTransition() {
+  const finalPositions = animatedLetters.map(letterObj => letterObj.pathPoints[letterObj.pathPoints.length - 1]);
+  const spotlightRadius = 0.5; // Define the radius of the spotlight circle
+  const spotlightColor = "#bd8dbd"; // Spotlight color
+  const darkBlueColor = "#0100be"; // Dark blue color
+  
+  const spotlightTween = new TWEEN.Tween({ x: -5 })
+    .to({ x: 5 }, 1500) // Move circle horizontally
+    .onUpdate((obj) => {
+      finalPositions.forEach((finalPos, index) => {
+        const distance = Math.abs(finalPos.x - obj.x);
+        let color;
+        
+        // Calculate the color based on the distance from the spotlight center
+        if (distance <= spotlightRadius) {
+          // Inside the spotlight circle, use the spotlight color
+          color = spotlightColor;
+        } else {
+          // Outside the spotlight circle, gradually transition back to the darker blue color
+          const maxDistance = spotlightRadius * 2; // Adjust for a smooth transition
+          const factor = Math.min((distance - spotlightRadius) / maxDistance, 1);
+          color = interpolateColor(spotlightColor, darkBlueColor, factor);
+        }
+        
+        animatedLetters[index].mesh.material.color.set(color); // Access the textMesh via letterObj.mesh
+      });
+    })
+    .start();
+}
 
 // Create a shader for pixelation effect
 const pixelationShader = {
