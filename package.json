@@ -25,6 +25,7 @@
     "draft-js": "^0.11.7",
     "draft-js-export-html": "^1.4.1",
     "firebase": "^10.11.0",
+    "gsap": "^3.12.5",
     "html-react-parser": "^5.1.10",
     "html-to-image": "^1.11.11",
     "html2canvas": "^1.4.1",
@@ -38,7 +39,7 @@
     "react-router-dom": "^6.22.3",
     "react-slate": "^0.1.0",
     "three": "^0.165.0",
-    "tween": "^0.9.0",
+    "tween.js": "^16.6.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

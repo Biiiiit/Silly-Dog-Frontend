@@ -62,145 +62,121 @@ const interpolateColor = (color1, color2, factor) => {
 
 const animatedLetters = [];
 
-// Function to animate a letter
-const animateLetter = (letter, initialPosition, pathPoints, delay) => {
+// Initialize letters
+async function initLetters() {
   const loader = new FontLoader();
-  loader.load("src/assets/Futura_Bold Italic.json", function (font) {
-    const textMaterial = new THREE.MeshPhongMaterial({ color: new THREE.Color(colors[0]) });
-    const textGeometry = new TextGeometry(letter, {
-      font: font,
-      size: 1,
-      depth: 0.2,
-      curveSegments: 4,
-      bevelEnabled: false,
-      bevelThickness: 0.03,
-      bevelSize: 0.02,
-      bevelOffset: 0,
-      bevelSegments: 5,
+  try {
+    const font = await new Promise((resolve, reject) => {
+      loader.load(
+        "src/assets/Futura_Bold Italic.json", // Update this path to your actual font path
+        resolve,
+        undefined,
+        reject
+      );
     });
-    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-    textMesh.castShadow = true;
-    textMesh.receiveShadow = true;
-    textMesh.position.copy(initialPosition);
-    scene.add(textMesh);
 
-    const curve = new THREE.CatmullRomCurve3(pathPoints);
-    const animationDuration = 783;
-    const animationTween = new TWEEN.Tween({ progress: 0 })
-      .to({ progress: 1 }, animationDuration)
-      .onUpdate((obj) => {
-        const pointOnCurve = curve.getPointAt(obj.progress);
-        textMesh.position.copy(pointOnCurve);
+    letters.forEach(({ letter, initialPosition, pathPoints, delay }) => {
+      animateLetter(font, letter, initialPosition, pathPoints, delay);
+    });
+  } catch (error) {
+    console.error("Error loading font:", error);
+  }
+}
 
-        const frameProgress = obj.progress * (colors.length - 1);
-        const currentFrame = Math.floor(frameProgress);
-        const nextFrame = Math.ceil(frameProgress);
-        const frameFactor = frameProgress - currentFrame;
-        const interpolatedColor = interpolateColor(colors[currentFrame], colors[nextFrame], frameFactor);
-        textMaterial.color.set(interpolatedColor);
-      })
-      .onComplete(() => {
-        textMaterial.color.set(colors[colors.length - 1]);
-
-        const bounceDuration = 350;
-        const bounceHeight = 0.4;
-
-        const bounceTween1 = new TWEEN.Tween({ y: textMesh.position.y })
-          .to({ y: textMesh.position.y + bounceHeight }, bounceDuration / 2)
-          .easing(TWEEN.Easing.Quadratic.Out)
-          .onUpdate((obj) => { textMesh.position.y = obj.y; })
-          .yoyo(true)
-          .repeat(1);
-
-        const bounceTween2 = new TWEEN.Tween({ y: textMesh.position.y })
-          .to({ y: textMesh.position.y + bounceHeight * 0.25 }, bounceDuration / 4)
-          .easing(TWEEN.Easing.Quadratic.Out)
-          .onUpdate((obj) => { textMesh.position.y = obj.y; })
-          .yoyo(true)
-          .repeat(1);
-
-        const bounceTween3 = new TWEEN.Tween({ y: textMesh.position.y })
-          .to({ y: textMesh.position.y + bounceHeight * 0.0625 }, bounceDuration / 8)
-          .easing(TWEEN.Easing.Quadratic.Out)
-          .onUpdate((obj) => { textMesh.position.y = obj.y; })
-          .yoyo(true)
-          .repeat(1);
-
-        const bounceTween4 = new TWEEN.Tween({ y: textMesh.position.y })
-          .to({ y: textMesh.position.y + bounceHeight * 0.015625 }, bounceDuration / 16)
-          .easing(TWEEN.Easing.Quadratic.Out)
-          .onUpdate((obj) => { textMesh.position.y = obj.y; })
-          .yoyo(true)
-          .repeat(1);
-
-        bounceTween1.chain(bounceTween2);
-        bounceTween2.chain(bounceTween3);
-        bounceTween3.chain(bounceTween4);
-        bounceTween1.start();
-      });
-
-    setTimeout(() => {
-      animationTween.start();
-    }, delay);
-    // Store the modified letter object in the new array
-    animatedLetters.push({ letter, initialPosition, pathPoints, delay, mesh: textMesh });
+// Function to animate a letter
+const animateLetter = (font, letter, initialPosition, pathPoints, delay) => {
+  const textMaterial = new THREE.MeshPhongMaterial({ color: new THREE.Color(colors[0]) });
+  const textGeometry = new TextGeometry(letter, {
+    font: font,
+    size: 1,
+    depth: 0.2,
+    curveSegments: 4,
+    bevelEnabled: false,
+    bevelThickness: 0.03,
+    bevelSize: 0.02,
+    bevelOffset: 0,
+    bevelSegments: 5,
   });
+  const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+  textMesh.castShadow = true;
+  textMesh.receiveShadow = true;
+  textMesh.position.copy(initialPosition);
+  scene.add(textMesh);
+
+  const curve = new THREE.CatmullRomCurve3(pathPoints);
+  const animationDuration = 783;
+  const animationTween = new TWEEN.Tween({ progress: 0 })
+    .to({ progress: 1 }, animationDuration)
+    .onUpdate((obj) => {
+      const pointOnCurve = curve.getPointAt(obj.progress);
+      textMesh.position.copy(pointOnCurve);
+
+      const frameProgress = obj.progress * (colors.length - 1);
+      const currentFrame = Math.floor(frameProgress);
+      const nextFrame = Math.ceil(frameProgress);
+      const frameFactor = frameProgress - currentFrame;
+      const interpolatedColor = interpolateColor(colors[currentFrame], colors[nextFrame], frameFactor);
+      textMaterial.color.set(interpolatedColor);
+    })
+    .onComplete(() => {
+      textMaterial.color.set(colors[colors.length - 1]);
+
+      const bounceDuration = 350;
+      const bounceHeight = 0.4;
+
+      const bounceTween1 = new TWEEN.Tween({ y: textMesh.position.y })
+        .to({ y: textMesh.position.y + bounceHeight }, bounceDuration / 2)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .onUpdate((obj) => { textMesh.position.y = obj.y; })
+        .yoyo(true)
+        .repeat(1);
+
+      const bounceTween2 = new TWEEN.Tween({ y: textMesh.position.y })
+        .to({ y: textMesh.position.y + bounceHeight * 0.25 }, bounceDuration / 4)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .onUpdate((obj) => { textMesh.position.y = obj.y; })
+        .yoyo(true)
+        .repeat(1);
+
+      const bounceTween3 = new TWEEN.Tween({ y: textMesh.position.y })
+        .to({ y: textMesh.position.y + bounceHeight * 0.0625 }, bounceDuration / 8)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .onUpdate((obj) => { textMesh.position.y = obj.y; })
+        .yoyo(true)
+        .repeat(1);
+
+      const bounceTween4 = new TWEEN.Tween({ y: textMesh.position.y })
+        .to({ y: textMesh.position.y + bounceHeight * 0.015625 }, bounceDuration / 16)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .onUpdate((obj) => { textMesh.position.y = obj.y; })
+        .yoyo(true)
+        .repeat(1);
+
+      bounceTween1.chain(bounceTween2);
+      bounceTween2.chain(bounceTween3);
+      bounceTween3.chain(bounceTween4);
+      bounceTween1.start();
+    });
+
+  setTimeout(() => {
+    animationTween.start();
+  }, delay);
+  // Store the modified letter object in the new array
+  animatedLetters.push({ letter, initialPosition, pathPoints, delay, mesh: textMesh });
 };
 
 // Letters with their initial positions, paths and delays
 const letters = [
   { letter: "S", initialPosition: new THREE.Vector3(-1.9, -2, 10), pathPoints: [new THREE.Vector3(-1.9, -2, 10), new THREE.Vector3(-1.8, 0.3, 8), new THREE.Vector3(-2.15, 0.75, 7), new THREE.Vector3(-3.1, 0.3, 6), new THREE.Vector3(-3.8, 0.3, 6)], delay: 0 },
-  { letter: "i", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1.2, -2, 10), new THREE.Vector3(-1.5, 0.3, 8), new THREE.Vector3(-1.75, 0.75, 7), new THREE.Vector3(-2.3, 0.3, 6), new THREE.Vector3(-3, 0.3, 6)], delay: 200 },
-  { letter: "L", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1, -2, 10), new THREE.Vector3(-1.3, 0.3, 8), new THREE.Vector3(-1.5, 0.75, 7), new THREE.Vector3(-1.95, 0.3, 6), new THREE.Vector3(-2.65, 0.3, 6)], delay: 250 },
-  { letter: "L", initialPosition: new THREE.Vector3(-0.8, -2, 10), pathPoints: [new THREE.Vector3(-0.8, -2, 10), new THREE.Vector3(-1, 0.3, 8), new THREE.Vector3(-1.3, 0.75, 7), new THREE.Vector3(-1.75, 0.3, 6), new THREE.Vector3(-1.95, 0.3, 6)], delay: 300 },
-  { letter: "Y", initialPosition: new THREE.Vector3(-0.6, -2, 10), pathPoints: [new THREE.Vector3(-0.6, -2, 10), new THREE.Vector3(-0.7, 0.3, 8), new THREE.Vector3(-0.8, 0.75, 7), new THREE.Vector3(-1.1, 0.3, 6), new THREE.Vector3(-1.4, 0.3, 6)], delay: 350 },
-  { letter: "D", initialPosition: new THREE.Vector3(-0.4, -2, 10), pathPoints: [new THREE.Vector3(-0.4, -2, 10), new THREE.Vector3(-0.5, 0.3, 8), new THREE.Vector3(-0.6, 0.75, 7), new THREE.Vector3(-0.8, 0.3, 6), new THREE.Vector3(-0.4, 0.3, 6)], delay: 400 },
-  { letter: "O", initialPosition: new THREE.Vector3(0.95, -2, 10), pathPoints: [new THREE.Vector3(-0.25, -2, 10), new THREE.Vector3(-0.15, 0.3, 8), new THREE.Vector3(-0.05, 0.75, 7), new THREE.Vector3(0.15, 0.3, 6), new THREE.Vector3(0.55, 0.3, 6)], delay: 450 },
-  { letter: "G", initialPosition: new THREE.Vector3(0.96, -2, 10), pathPoints: [new THREE.Vector3(0.25, -2, 10), new THREE.Vector3(0.45, 0.3, 8), new THREE.Vector3(0.65, 0.75, 7), new THREE.Vector3(1.25, 0.3, 6), new THREE.Vector3(1.65, 0.3, 6)], delay: 500 },
-  { letter: "S", initialPosition: new THREE.Vector3(3.1, -2, 10), pathPoints: [new THREE.Vector3(1, -2, 10), new THREE.Vector3(0.8, 0.3, 8), new THREE.Vector3(1.3, 0.75, 7), new THREE.Vector3(2.1, 0.3, 6), new THREE.Vector3(2.7, 0.3, 6)], delay: 550 },
+  { letter: "i", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1.2, -2, 10), new THREE.Vector3(-1.5, 0.3, 8), new THREE.Vector3(-1.75, 0.75, 7), new THREE.Vector3(-2.3, 0.3, 6), new THREE.Vector3(-3, 0.3, 6)], delay: 50 },
+  { letter: "L", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1, -2, 10), new THREE.Vector3(-1.3, 0.3, 8), new THREE.Vector3(-1.5, 0.75, 7), new THREE.Vector3(-1.95, 0.3, 6), new THREE.Vector3(-2.65, 0.3, 6)], delay: 100 },
+  { letter: "L", initialPosition: new THREE.Vector3(-0.8, -2, 10), pathPoints: [new THREE.Vector3(-0.8, -2, 10), new THREE.Vector3(-1, 0.3, 8), new THREE.Vector3(-1.3, 0.75, 7), new THREE.Vector3(-1.75, 0.3, 6), new THREE.Vector3(-1.95, 0.3, 6)], delay: 150 },
+  { letter: "Y", initialPosition: new THREE.Vector3(-0.6, -2, 10), pathPoints: [new THREE.Vector3(-0.6, -2, 10), new THREE.Vector3(-0.7, 0.3, 8), new THREE.Vector3(-0.8, 0.75, 7), new THREE.Vector3(-1.1, 0.3, 6), new THREE.Vector3(-1.4, 0.3, 6)], delay: 200 },
+  { letter: "D", initialPosition: new THREE.Vector3(-0.4, -2, 10), pathPoints: [new THREE.Vector3(-0.4, -2, 10), new THREE.Vector3(-0.5, 0.3, 8), new THREE.Vector3(-0.6, 0.75, 7), new THREE.Vector3(-0.8, 0.3, 6), new THREE.Vector3(-0.4, 0.3, 6)], delay: 250 },
+  { letter: "O", initialPosition: new THREE.Vector3(0.95, -2, 10), pathPoints: [new THREE.Vector3(-0.25, -2, 10), new THREE.Vector3(-0.15, 0.3, 8), new THREE.Vector3(-0.05, 0.75, 7), new THREE.Vector3(0.15, 0.3, 6), new THREE.Vector3(0.55, 0.3, 6)], delay: 300 },
+  { letter: "G", initialPosition: new THREE.Vector3(0.96, -2, 10), pathPoints: [new THREE.Vector3(0.25, -2, 10), new THREE.Vector3(0.45, 0.3, 8), new THREE.Vector3(0.65, 0.75, 7), new THREE.Vector3(1.25, 0.3, 6), new THREE.Vector3(1.65, 0.3, 6)], delay: 350 },
+  { letter: "S", initialPosition: new THREE.Vector3(3.1, -2, 10), pathPoints: [new THREE.Vector3(1, -2, 10), new THREE.Vector3(0.8, 0.3, 8), new THREE.Vector3(1.3, 0.75, 7), new THREE.Vector3(2.1, 0.3, 6), new THREE.Vector3(2.7, 0.3, 6)], delay: 400 },
 ];
-
-// Animate all letters
-letters.forEach(({ letter, initialPosition, pathPoints, delay }) => {
-  animateLetter(letter, initialPosition, pathPoints, delay);
-});
-
-// Calculate the total animation duration of all letters
-const totalAnimationDuration = letters.reduce((max, { delay }) => Math.max(max, delay), 0) + 1000; // Add extra time for the spotlight to start after all letters finish animating
-
-// Start the color transition effect after the bounce is completed
-setTimeout(startColorTransition, totalAnimationDuration);
-
-// Modify the startColorTransition function to create a spotlight effect with a localized circle
-function startColorTransition() {
-  const finalPositions = animatedLetters.map(letterObj => letterObj.pathPoints[letterObj.pathPoints.length - 1]);
-  const spotlightRadius = 0.5; // Define the radius of the spotlight circle
-  const spotlightColor = "#bd8dbd"; // Spotlight color
-  const darkBlueColor = "#0100be"; // Dark blue color
-  
-  const spotlightTween = new TWEEN.Tween({ x: -5 })
-    .to({ x: 5 }, 1500) // Move circle horizontally
-    .onUpdate((obj) => {
-      finalPositions.forEach((finalPos, index) => {
-        const distance = Math.abs(finalPos.x - obj.x);
-        let color;
-        
-        // Calculate the color based on the distance from the spotlight center
-        if (distance <= spotlightRadius) {
-          // Inside the spotlight circle, use the spotlight color
-          color = spotlightColor;
-        } else {
-          // Outside the spotlight circle, gradually transition back to the darker blue color
-          const maxDistance = spotlightRadius * 2; // Adjust for a smooth transition
-          const factor = Math.min((distance - spotlightRadius) / maxDistance, 1);
-          color = interpolateColor(spotlightColor, darkBlueColor, factor);
-        }
-        
-        animatedLetters[index].mesh.material.color.set(color); // Access the textMesh via letterObj.mesh
-      });
-    })
-    .start();
-}
 
 // Create a shader for pixelation effect
 const pixelationShader = {
@@ -244,7 +220,10 @@ const animate = function () {
   composer.render();
 };
 
-animate();
+// Initialize the letters and start the animation loop
+initLetters().then(() => {
+  animate();
+});
 
 // Handle window resize
 window.addEventListener("resize", () => {
