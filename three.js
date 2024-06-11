@@ -6,34 +6,35 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 
-// Create a scene
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffffff); // Set background to white
-THREE.ColorManagement.enabled = true;
+// Create the main scene
+const mainScene = new THREE.Scene();
+mainScene.background = new THREE.Color(0xffffff); // Set background to white
 
-// Create a camera
-const camera = new THREE.PerspectiveCamera(
+// Create a camera for the main scene
+const mainCamera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-camera.position.set(0, 0, 10);
+mainCamera.position.set(0, 0, 10);
 
-// Create a renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+
+// Create a renderer for the main scene
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setClearColor( 0xffffff, 0);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // Set up ambient light with a slightly darker color and higher intensity
 const ambientLight = new THREE.AmbientLight(0xf2f2f2, 5); // Use a slightly darker color
-scene.add(ambientLight);
+mainScene.add(ambientLight);
 
 // Add a directional light representing the camera light
 const cameraLight = new THREE.DirectionalLight(0xffffff, 5);
-cameraLight.position.copy(camera.position); // Position the light at the same position as the camera
-scene.add(cameraLight);
+cameraLight.position.copy(mainCamera.position); // Position the light at the same position as the camera
+mainScene.add(cameraLight);
 
 // Enable shadow casting for the light
 cameraLight.castShadow = true;
@@ -52,9 +53,12 @@ const rotationSpeed = 0.5;
 
 // Create a render target for the text
 const textRenderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
-
-// Create an EffectComposer instance
+// Create an EffectComposer for the main scene
 const composer = new EffectComposer(renderer);
+
+// Create a render pass for the main scene
+const renderPass = new RenderPass(mainScene, mainCamera);
+composer.addPass(renderPass);
 
 // Load the font and create the text geometry
 const loader = new FontLoader();
@@ -87,17 +91,18 @@ loader.load('src/assets/Futura_Bold Italic.json', (font) => {
     textMesh.castShadow = true;
     textMesh.receiveShadow = true;
     textMesh.position.set(centerOffset, 0, 0); // Adjust position as needed
-    scene.add(textMesh);
+    mainScene.add(textMesh);
 
     // Create a pivot point
     pivot = new THREE.Object3D();
     pivot.add(textMesh);
-    scene.add(pivot);
+    mainScene.add(pivot);
     pivot.position.set(0, 1, -10); // Adjust pivot position as needed
 
     // Start the scaling and rotation animation
     scaleAndRotateAnimation();
 });
+
 
 // Create a shader for pixelation effect
 const pixelationShader = {
@@ -124,22 +129,63 @@ const pixelationShader = {
   `,
 };
 
-// Create a shader pass for pixelation effect
+// Create a ShaderPass for pixelation effect
 const pixelationPass = new ShaderPass(pixelationShader);
 pixelationPass.uniforms.pixelSize.value = 500.0; // Adjust pixel size as needed
-
-// Add passes to the composer
-composer.addPass(new RenderPass(scene, camera));
 composer.addPass(pixelationPass);
+
+// Initialize the text scene and camera
+const textScene = new THREE.Scene();
+const textCamera = new THREE.OrthographicCamera(
+  window.innerWidth / -2, window.innerWidth / 2,
+  window.innerHeight / 2, window.innerHeight / -2,
+  -1000, 1000
+);
+textCamera.position.z = 20; // Move the camera further away from the scene
+
+// Load the font and create the text geometry
+loader.load('src/assets/Futura_Bold Italic.json', function (font) {
+  const nameTextGeometry = new TextGeometry("Silly Dog Productions®", {
+    font: font,
+    size: 40, // Adjust size as needed
+    depth: 1, // Adjust height as needed
+  });
+  nameTextGeometry.computeBoundingBox();
+
+  // Calculate the center of the bounding box
+  const nameTextBoundingBox = nameTextGeometry.boundingBox;
+  const nameTextCenter = nameTextBoundingBox.getCenter(new THREE.Vector3());
+
+  const nameTextMaterial = new THREE.MeshBasicMaterial({ color: 0xaa33b3, transparent: true, opacity: 0 });
+  const nameTextMesh = new THREE.Mesh(nameTextGeometry, nameTextMaterial);
+
+  // Adjust position based on the center of the bounding box
+  nameTextMesh.position.set(
+    -nameTextCenter.x,
+    -nameTextCenter.y - 150,
+    -10 // Move the text closer to the camera than the main scene
+  );
+  textScene.add(nameTextMesh);
+
+  // Create a tween to animate the opacity of the new text geometry
+  new TWEEN.Tween(nameTextMaterial)
+    .to({ opacity: 1 }, 100) // Fade in over 0.1 seconds (100 milliseconds)
+    .delay(100) // Delay the start of the tween
+    .start();
+});
 
 // Function to remove the text geometry
 const removeTextGeometry = () => {
   if (pivot) {
-      scene.remove(pivot);
+      mainScene.remove(pivot);
   }
+  // Remove event listeners to ensure they only trigger once
+  window.removeEventListener('keydown', removeTextGeometry);
+  window.removeEventListener('mousedown', removeTextGeometry);
+  
   // Initialize the letters and start the animation loop after the text geometry is removed
   initLetters().then(() => {
-      animate();
+      animateBothScenes();
   });
 };
 
@@ -173,7 +219,7 @@ function scaleAndRotateAnimation() {
 
   // Render the text scene into the render target
   renderer.setRenderTarget(textRenderTarget);
-  renderer.render(scene, camera);
+  renderer.render(mainScene, mainCamera);
   renderer.setRenderTarget(null); // Restore the main render target
 
   // Render the scene with the pixelation effect
@@ -269,7 +315,7 @@ const animateLetter = async (font, letter, initialPosition, pathPoints, delay) =
   textMesh.castShadow = true;
   textMesh.receiveShadow = true;
   textMesh.position.copy(initialPosition);
-  scene.add(textMesh);
+  mainScene.add(textMesh);
 
   const curve = new THREE.CatmullRomCurve3(pathPoints);
   const animationDuration = 783;
@@ -335,22 +381,16 @@ const animateLetter = async (font, letter, initialPosition, pathPoints, delay) =
 
 // Letters with their initial positions, paths and delays
 const letters = [
-  { letter: "S", initialPosition: new THREE.Vector3(-1.9, -2, 10), pathPoints: [new THREE.Vector3(-1.9, -2, 10), new THREE.Vector3(-1.8, 0.3, 8), new THREE.Vector3(-2.15, 0.75, 7), new THREE.Vector3(-3.1, 0.3, 6), new THREE.Vector3(-3.8, 0.3, 6)], delay: 0 },
-  { letter: "i", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1.2, -2, 10), new THREE.Vector3(-1.5, 0.3, 8), new THREE.Vector3(-1.75, 0.75, 7), new THREE.Vector3(-2.3, 0.3, 6), new THREE.Vector3(-3, 0.3, 6)], delay: 50 },
-  { letter: "L", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1, -2, 10), new THREE.Vector3(-1.3, 0.3, 8), new THREE.Vector3(-1.5, 0.75, 7), new THREE.Vector3(-1.95, 0.3, 6), new THREE.Vector3(-2.65, 0.3, 6)], delay: 100 },
-  { letter: "L", initialPosition: new THREE.Vector3(-0.8, -2, 10), pathPoints: [new THREE.Vector3(-0.8, -2, 10), new THREE.Vector3(-1, 0.3, 8), new THREE.Vector3(-1.3, 0.75, 7), new THREE.Vector3(-1.75, 0.3, 6), new THREE.Vector3(-1.95, 0.3, 6)], delay: 150 },
-  { letter: "Y", initialPosition: new THREE.Vector3(-0.6, -2, 10), pathPoints: [new THREE.Vector3(-0.6, -2, 10), new THREE.Vector3(-0.7, 0.3, 8), new THREE.Vector3(-0.8, 0.75, 7), new THREE.Vector3(-1.1, 0.3, 6), new THREE.Vector3(-1.4, 0.3, 6)], delay: 200 },
-  { letter: "D", initialPosition: new THREE.Vector3(-0.4, -2, 10), pathPoints: [new THREE.Vector3(-0.4, -2, 10), new THREE.Vector3(-0.5, 0.3, 8), new THREE.Vector3(-0.6, 0.75, 7), new THREE.Vector3(-0.8, 0.3, 6), new THREE.Vector3(-0.4, 0.3, 6)], delay: 250 },
-  { letter: "O", initialPosition: new THREE.Vector3(0.95, -2, 10), pathPoints: [new THREE.Vector3(-0.25, -2, 10), new THREE.Vector3(-0.15, 0.3, 8), new THREE.Vector3(-0.05, 0.75, 7), new THREE.Vector3(0.15, 0.3, 6), new THREE.Vector3(0.55, 0.3, 6)], delay: 300 },
-  { letter: "G", initialPosition: new THREE.Vector3(0.96, -2, 10), pathPoints: [new THREE.Vector3(0.25, -2, 10), new THREE.Vector3(0.45, 0.3, 8), new THREE.Vector3(0.65, 0.75, 7), new THREE.Vector3(1.25, 0.3, 6), new THREE.Vector3(1.65, 0.3, 6)], delay: 350 },
-  { letter: "S", initialPosition: new THREE.Vector3(3.1, -2, 10), pathPoints: [new THREE.Vector3(1, -2, 10), new THREE.Vector3(0.8, 0.3, 8), new THREE.Vector3(1.3, 0.75, 7), new THREE.Vector3(2.1, 0.3, 6), new THREE.Vector3(2.7, 0.3, 6)], delay: 400 },
+  { letter: "S", initialPosition: new THREE.Vector3(-1.9, -2, 10), pathPoints: [new THREE.Vector3(-1.9, -2, 10), new THREE.Vector3(-1.8, 0.3, 8), new THREE.Vector3(-2.15, 0.75, 7), new THREE.Vector3(-3.1, 0.3, 6), new THREE.Vector3(-3.6, 0.3, 6)], delay: 0 },
+  { letter: "i", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1.2, -2, 10), new THREE.Vector3(-1.5, 0.3, 8), new THREE.Vector3(-1.75, 0.75, 7), new THREE.Vector3(-2.3, 0.3, 6), new THREE.Vector3(-2.8, 0.3, 6)], delay: 50 },
+  { letter: "L", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1, -2, 10), new THREE.Vector3(-1.3, 0.3, 8), new THREE.Vector3(-1.5, 0.75, 7), new THREE.Vector3(-1.95, 0.3, 6), new THREE.Vector3(-2.45, 0.3, 6)], delay: 100 },
+  { letter: "L", initialPosition: new THREE.Vector3(-0.8, -2, 10), pathPoints: [new THREE.Vector3(-0.8, -2, 10), new THREE.Vector3(-1, 0.3, 8), new THREE.Vector3(-1.3, 0.75, 7), new THREE.Vector3(-1.75, 0.3, 6), new THREE.Vector3(-1.75, 0.3, 6)], delay: 150 },
+  { letter: "Y", initialPosition: new THREE.Vector3(-0.6, -2, 10), pathPoints: [new THREE.Vector3(-0.6, -2, 10), new THREE.Vector3(-0.7, 0.3, 8), new THREE.Vector3(-0.8, 0.75, 7), new THREE.Vector3(-1.1, 0.3, 6), new THREE.Vector3(-1.2, 0.3, 6)], delay: 200 },
+  { letter: "D", initialPosition: new THREE.Vector3(-0.4, -2, 10), pathPoints: [new THREE.Vector3(-0.4, -2, 10), new THREE.Vector3(-0.5, 0.3, 8), new THREE.Vector3(-0.6, 0.75, 7), new THREE.Vector3(-0.8, 0.3, 6), new THREE.Vector3(-0.3, 0.3, 6)], delay: 250 },
+  { letter: "O", initialPosition: new THREE.Vector3(0.95, -2, 10), pathPoints: [new THREE.Vector3(-0.25, -2, 10), new THREE.Vector3(-0.15, 0.3, 8), new THREE.Vector3(-0.05, 0.75, 7), new THREE.Vector3(0.15, 0.3, 6), new THREE.Vector3(0.75, 0.3, 6)], delay: 300 },
+  { letter: "G", initialPosition: new THREE.Vector3(0.96, -2, 10), pathPoints: [new THREE.Vector3(0.25, -2, 10), new THREE.Vector3(0.45, 0.3, 8), new THREE.Vector3(0.65, 0.75, 7), new THREE.Vector3(1.25, 0.3, 6), new THREE.Vector3(1.85, 0.3, 6)], delay: 350 },
+  { letter: "S", initialPosition: new THREE.Vector3(3.1, -2, 10), pathPoints: [new THREE.Vector3(1, -2, 10), new THREE.Vector3(0.8, 0.3, 8), new THREE.Vector3(1.3, 0.75, 7), new THREE.Vector3(2.1, 0.3, 6), new THREE.Vector3(2.9, 0.3, 6)], delay: 400 },
 ];
-
-pixelationPass.uniforms.pixelSize.value = 500.0; // Adjust pixel size as needed
-
-const renderPass = new RenderPass(scene, camera);
-composer.addPass(renderPass);
-composer.addPass(pixelationPass);
 
 // Arrays for custom parameters (radius, color, opacity)
 const radii = [0.45, 0.65, 1, 1.5, 2.5, 3];
@@ -366,11 +406,19 @@ const endPosition = new THREE.Vector3(8, 1.1, 6.21);
 // Create a single delay for the entire animation
 const totalDelay = 1900; // 2000 milliseconds = 2 seconds
 
-// Start the animation loop
-const animate = function () {
-  requestAnimationFrame(animate);
+// Animation loop for rendering both scenes with the composer
+const animateBothScenes = function () {
+  requestAnimationFrame(animateBothScenes);
   TWEEN.update();
+
+  // Render the main scene with the composer
   composer.render();
+  // Clear the depth buffer to render the text scene on top
+  renderer.clearDepth();
+  // Set renderer auto clear to false to prevent clearing the color buffer
+  renderer.autoClear = false;
+  // Render the text scene with transparency
+  renderer.render(textScene, textCamera);
 
   // Check if the fakelights have been created
   if (fakelights.length === 0) {
@@ -387,7 +435,7 @@ const animate = function () {
       const fakelight = new THREE.Mesh(geometry, material);
       fakelight.position.set(-7, 1.1, 6.21);
 
-      scene.add(fakelight);
+      mainScene.add(fakelight);
       fakelights.push(fakelight);
 
       // Create tweens to animate the position of fakelights with a single delay
@@ -421,7 +469,7 @@ const animate = function () {
 
 // Handle window resize
 window.addEventListener("resize", () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
+  mainCamera.aspect = window.innerWidth / window.innerHeight;
+  mainCamera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
