@@ -50,13 +50,19 @@ let scaleValue = 1;
 const scaleSpeed = 0.055;
 const rotationSpeed = 0.5;
 
+// Create a render target for the text
+const textRenderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
+
+// Create an EffectComposer instance
+const composer = new EffectComposer(renderer);
+
 // Load the font and create the text geometry
 const loader = new FontLoader();
-loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
-    const textGeometry = new TextGeometry('Press any button to continue...', {
+loader.load('src/assets/Futura_Bold Italic.json', (font) => {
+    const textGeometry = new TextGeometry('Press any button to continue. . .', {
         font: font,
-        size: 1,
-        depth: 0.2,
+        size: 1.3,
+        depth: 0.5,
         curveSegments: 12,
         bevelEnabled: true,
         bevelThickness: 0.03,
@@ -69,9 +75,19 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json
     textGeometry.computeBoundingBox();
     const centerOffset = -0.5 * (textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
 
-    const textMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    textMesh = new THREE.Mesh(textGeometry, textMaterial);
+    // Define materials for the face and bevels of the text
+    const textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+    const bevelMaterial = new THREE.MeshPhongMaterial({ color: 0x8a1717 }); // Dark color for definition
+
+    // Create a multi-material array for the text geometry
+    const materials = [textMaterial, bevelMaterial];
+
+    // Create a mesh with the text geometry and apply the multi-material
+    textMesh = new THREE.Mesh(textGeometry, materials);
+    textMesh.castShadow = true;
+    textMesh.receiveShadow = true;
     textMesh.position.set(centerOffset, 0, 0); // Adjust position as needed
+    scene.add(textMesh);
 
     // Create a pivot point
     pivot = new THREE.Object3D();
@@ -83,15 +99,48 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json
     scaleAndRotateAnimation();
 });
 
+// Create a shader for pixelation effect
+const pixelationShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    pixelSize: { value: 8.0 }, // Adjust pixel size as needed
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float pixelSize;
+    varying vec2 vUv;
+    void main() {
+      vec2 uv = vUv * pixelSize;
+      uv = floor(uv) / pixelSize;
+      gl_FragColor = texture2D(tDiffuse, uv);
+    }
+  `,
+};
+
+// Create a shader pass for pixelation effect
+const pixelationPass = new ShaderPass(pixelationShader);
+pixelationPass.uniforms.pixelSize.value = 500.0; // Adjust pixel size as needed
+
+// Add passes to the composer
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(pixelationPass);
+
 // Function to remove the text geometry
 const removeTextGeometry = () => {
-    if (pivot) {
-        scene.remove(pivot);
-    }
-    // Initialize the letters and start the animation loop after the text geometry is removed
-    initLetters().then(() => {
-        animate();
-    });
+  if (pivot) {
+      scene.remove(pivot);
+  }
+  // Initialize the letters and start the animation loop after the text geometry is removed
+  initLetters().then(() => {
+      animate();
+  });
 };
 
 // Listen for keydown and mousedown events
@@ -121,7 +170,14 @@ function scaleAndRotateAnimation() {
       textMesh.position.x = -textLength / 2;
       textMesh.position.y = -offsetY;
   }
+
+  // Render the text scene into the render target
+  renderer.setRenderTarget(textRenderTarget);
   renderer.render(scene, camera);
+  renderer.setRenderTarget(null); // Restore the main render target
+
+  // Render the scene with the pixelation effect
+  composer.render();
 }
 
 // Define colors for each of the 23 frames
@@ -290,37 +346,8 @@ const letters = [
   { letter: "S", initialPosition: new THREE.Vector3(3.1, -2, 10), pathPoints: [new THREE.Vector3(1, -2, 10), new THREE.Vector3(0.8, 0.3, 8), new THREE.Vector3(1.3, 0.75, 7), new THREE.Vector3(2.1, 0.3, 6), new THREE.Vector3(2.7, 0.3, 6)], delay: 400 },
 ];
 
-// Create a shader for pixelation effect
-const pixelationShader = {
-  uniforms: {
-    tDiffuse: { value: null },
-    pixelSize: { value: 8.0 }, // Adjust pixel size as needed
-  },
-  vertexShader: `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `,
-  fragmentShader: `
-    uniform sampler2D tDiffuse;
-    uniform float pixelSize;
-    varying vec2 vUv;
-    void main() {
-      vec2 uv = vUv * pixelSize;
-      uv = floor(uv) / pixelSize;
-      gl_FragColor = texture2D(tDiffuse, uv);
-    }
-  `,
-};
-
-// Create a shader pass for pixelation effect
-const pixelationPass = new ShaderPass(pixelationShader);
 pixelationPass.uniforms.pixelSize.value = 500.0; // Adjust pixel size as needed
 
-// Create an effect composer
-const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
 composer.addPass(pixelationPass);
