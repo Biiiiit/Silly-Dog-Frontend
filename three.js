@@ -44,31 +44,85 @@ cameraLight.shadow.mapSize.height = 1024; // Optional: Increase map size for smo
 cameraLight.shadow.camera.near = 0.5; // Optional: Adjust near and far values for shadow camera
 cameraLight.shadow.camera.far = 500; // Optional: Adjust near and far values for shadow camera
 
-// Create a flashing text element
-const flashingText = document.createElement('div');
-flashingText.textContent = 'Press any button to continue...';
-flashingText.style.position = 'absolute';
-flashingText.style.top = '20px';
-flashingText.style.left = '50%';
-flashingText.style.transform = 'translateX(-50%)';
-flashingText.style.color = 'red'; // Change color as needed
-document.body.appendChild(flashingText);
+let textMesh;
+let pivot;
+let scaleValue = 1;
+const scaleSpeed = 0.055;
+const rotationSpeed = 0.5;
 
-// Function to remove the flashing text
-const removeFlashingText = () => {
-  document.body.removeChild(flashingText);
-  // Start the animation loop after the flashing text is removed
-  // Initialize the letters and start the animation loop
-  initLetters().then(() => {
-    animate();
-  });
+// Load the font and create the text geometry
+const loader = new FontLoader();
+loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+    const textGeometry = new TextGeometry('Press any button to continue...', {
+        font: font,
+        size: 1,
+        depth: 0.2,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.03,
+        bevelSize: 0.02,
+        bevelOffset: 0,
+        bevelSegments: 5
+    });
+
+    // Center the geometry
+    textGeometry.computeBoundingBox();
+    const centerOffset = -0.5 * (textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+
+    const textMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    textMesh = new THREE.Mesh(textGeometry, textMaterial);
+    textMesh.position.set(centerOffset, 0, 0); // Adjust position as needed
+
+    // Create a pivot point
+    pivot = new THREE.Object3D();
+    pivot.add(textMesh);
+    scene.add(pivot);
+    pivot.position.set(0, 1, -10); // Adjust pivot position as needed
+
+    // Start the scaling and rotation animation
+    scaleAndRotateAnimation();
+});
+
+// Function to remove the text geometry
+const removeTextGeometry = () => {
+    if (pivot) {
+        scene.remove(pivot);
+    }
+    // Initialize the letters and start the animation loop after the text geometry is removed
+    initLetters().then(() => {
+        animate();
+    });
 };
 
-// Listen for keydown event
-window.addEventListener('keydown', removeFlashingText);
+// Listen for keydown and mousedown events
+window.addEventListener('keydown', removeTextGeometry);
+window.addEventListener('mousedown', removeTextGeometry);
 
-// Listen for mousedown event
-window.addEventListener('mousedown', removeFlashingText);
+// Scaling and rotation animation loop with easing
+function scaleAndRotateAnimation() {
+  requestAnimationFrame(scaleAndRotateAnimation);
+  if (pivot) {
+      // Update the scale using a sinusoidal function
+      scaleValue += scaleSpeed;
+      const scale = 1 + 0.1 * Math.sin(scaleValue);
+      pivot.scale.set(scale, scale, scale);
+
+      // Apply twisting rotation effect
+      const rotationAngleY = 0.1 * Math.sin(scaleValue * rotationSpeed);
+      const rotationAngleZ = 0.1 * Math.sin(scaleValue * rotationSpeed);
+      const rotationAngleX = 0.1 * Math.sin(scaleValue * rotationSpeed);
+      pivot.rotation.y = rotationAngleY;
+      pivot.rotation.z = rotationAngleZ;
+      pivot.rotation.x = rotationAngleX;
+
+      // Adjust position to keep the text centered
+      const textLength = textMesh.geometry.boundingBox.max.x - textMesh.geometry.boundingBox.min.x;
+      const offsetY = (textMesh.geometry.boundingBox.max.y - textMesh.geometry.boundingBox.min.y) / 2;
+      textMesh.position.x = -textLength / 2;
+      textMesh.position.y = -offsetY;
+  }
+  renderer.render(scene, camera);
+}
 
 // Define colors for each of the 23 frames
 const colors = [
