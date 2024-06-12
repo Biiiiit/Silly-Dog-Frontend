@@ -144,10 +144,10 @@ const textCamera = new THREE.OrthographicCamera(
 textCamera.position.z = 20; // Move the camera further away from the scene
 
 // Load the font and create the text geometry
-loader.load('src/assets/Futura_Bold Italic.json', function (font) {
+loader.load('src/assets/RO Spritendo_Spritendo-SemiBold-BETA.json', function (font) {
   const nameTextGeometry = new TextGeometry("Silly Dog Productions®", {
     font: font,
-    size: 40, // Adjust size as needed
+    size: 30, // Adjust size as needed
     depth: 1, // Adjust height as needed
   });
   nameTextGeometry.computeBoundingBox();
@@ -302,7 +302,7 @@ const animateLetter = async (font, letter, initialPosition, pathPoints, delay) =
   const textMaterial = new THREE.MeshPhongMaterial({ color: new THREE.Color(colors[0]) });
   const textGeometry = new TextGeometry(letter, {
     font: font,
-    size: 1,
+    size: 1.5,
     depth: 0.2,
     curveSegments: 4,
     bevelEnabled: false,
@@ -381,15 +381,15 @@ const animateLetter = async (font, letter, initialPosition, pathPoints, delay) =
 
 // Letters with their initial positions, paths and delays
 const letters = [
-  { letter: "S", initialPosition: new THREE.Vector3(-1.9, -2, 10), pathPoints: [new THREE.Vector3(-1.9, -2, 10), new THREE.Vector3(-1.8, 0.3, 8), new THREE.Vector3(-2.15, 0.75, 7), new THREE.Vector3(-3.1, 0.3, 6), new THREE.Vector3(-3.6, 0.3, 6)], delay: 0 },
-  { letter: "i", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1.2, -2, 10), new THREE.Vector3(-1.5, 0.3, 8), new THREE.Vector3(-1.75, 0.75, 7), new THREE.Vector3(-2.3, 0.3, 6), new THREE.Vector3(-2.8, 0.3, 6)], delay: 50 },
-  { letter: "L", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1, -2, 10), new THREE.Vector3(-1.3, 0.3, 8), new THREE.Vector3(-1.5, 0.75, 7), new THREE.Vector3(-1.95, 0.3, 6), new THREE.Vector3(-2.45, 0.3, 6)], delay: 100 },
-  { letter: "L", initialPosition: new THREE.Vector3(-0.8, -2, 10), pathPoints: [new THREE.Vector3(-0.8, -2, 10), new THREE.Vector3(-1, 0.3, 8), new THREE.Vector3(-1.3, 0.75, 7), new THREE.Vector3(-1.75, 0.3, 6), new THREE.Vector3(-1.75, 0.3, 6)], delay: 150 },
-  { letter: "Y", initialPosition: new THREE.Vector3(-0.6, -2, 10), pathPoints: [new THREE.Vector3(-0.6, -2, 10), new THREE.Vector3(-0.7, 0.3, 8), new THREE.Vector3(-0.8, 0.75, 7), new THREE.Vector3(-1.1, 0.3, 6), new THREE.Vector3(-1.2, 0.3, 6)], delay: 200 },
-  { letter: "D", initialPosition: new THREE.Vector3(-0.4, -2, 10), pathPoints: [new THREE.Vector3(-0.4, -2, 10), new THREE.Vector3(-0.5, 0.3, 8), new THREE.Vector3(-0.6, 0.75, 7), new THREE.Vector3(-0.8, 0.3, 6), new THREE.Vector3(-0.3, 0.3, 6)], delay: 250 },
-  { letter: "O", initialPosition: new THREE.Vector3(0.95, -2, 10), pathPoints: [new THREE.Vector3(-0.25, -2, 10), new THREE.Vector3(-0.15, 0.3, 8), new THREE.Vector3(-0.05, 0.75, 7), new THREE.Vector3(0.15, 0.3, 6), new THREE.Vector3(0.75, 0.3, 6)], delay: 300 },
-  { letter: "G", initialPosition: new THREE.Vector3(0.96, -2, 10), pathPoints: [new THREE.Vector3(0.25, -2, 10), new THREE.Vector3(0.45, 0.3, 8), new THREE.Vector3(0.65, 0.75, 7), new THREE.Vector3(1.25, 0.3, 6), new THREE.Vector3(1.85, 0.3, 6)], delay: 350 },
-  { letter: "S", initialPosition: new THREE.Vector3(3.1, -2, 10), pathPoints: [new THREE.Vector3(1, -2, 10), new THREE.Vector3(0.8, 0.3, 8), new THREE.Vector3(1.3, 0.75, 7), new THREE.Vector3(2.1, 0.3, 6), new THREE.Vector3(2.9, 0.3, 6)], delay: 400 },
+  { letter: "S", initialPosition: new THREE.Vector3(-1.9, -2, 10), pathPoints: [new THREE.Vector3(-1.9, -2, 10), new THREE.Vector3(-1.8, 0.3, 8), new THREE.Vector3(-2.15, 0.75, 7), new THREE.Vector3(-3.1, 0.3, 6), new THREE.Vector3(-5.3, 0.3, 6)], delay: 0 },
+  { letter: "i", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1.2, -2, 10), new THREE.Vector3(-1.5, 0.3, 8), new THREE.Vector3(-1.75, 0.75, 7), new THREE.Vector3(-2.3, 0.3, 6), new THREE.Vector3(-4.2, 0.3, 6)], delay: 50 },
+  { letter: "L", initialPosition: new THREE.Vector3(-1, -2, 10), pathPoints: [new THREE.Vector3(-1, -2, 10), new THREE.Vector3(-1.3, 0.3, 8), new THREE.Vector3(-1.5, 0.75, 7), new THREE.Vector3(-1.95, 0.3, 6), new THREE.Vector3(-3.75, 0.3, 6)], delay: 100 },
+  { letter: "L", initialPosition: new THREE.Vector3(-0.8, -2, 10), pathPoints: [new THREE.Vector3(-0.8, -2, 10), new THREE.Vector3(-1, 0.3, 8), new THREE.Vector3(-1.3, 0.75, 7), new THREE.Vector3(-1.75, 0.3, 6), new THREE.Vector3(-2.75, 0.3, 6)], delay: 150 },
+  { letter: "Y", initialPosition: new THREE.Vector3(-0.6, -2, 10), pathPoints: [new THREE.Vector3(-0.6, -2, 10), new THREE.Vector3(-0.7, 0.3, 8), new THREE.Vector3(-0.8, 0.75, 7), new THREE.Vector3(-1.1, 0.3, 6), new THREE.Vector3(-1.88, 0.3, 6)], delay: 200 },
+  { letter: "D", initialPosition: new THREE.Vector3(-0.4, -2, 10), pathPoints: [new THREE.Vector3(-0.4, -2, 10), new THREE.Vector3(-0.5, 0.3, 8), new THREE.Vector3(-0.6, 0.75, 7), new THREE.Vector3(-0.8, 0.3, 6), new THREE.Vector3(-0.41, 0.3, 6)], delay: 250 },
+  { letter: "O", initialPosition: new THREE.Vector3(0.95, -2, 10), pathPoints: [new THREE.Vector3(-0.25, -2, 10), new THREE.Vector3(-0.15, 0.3, 8), new THREE.Vector3(-0.05, 0.75, 7), new THREE.Vector3(0.15, 0.3, 6), new THREE.Vector3(1.01, 0.3, 6)], delay: 300 },
+  { letter: "G", initialPosition: new THREE.Vector3(0.96, -2, 10), pathPoints: [new THREE.Vector3(0.25, -2, 10), new THREE.Vector3(0.45, 0.3, 8), new THREE.Vector3(0.65, 0.75, 7), new THREE.Vector3(1.25, 0.3, 6), new THREE.Vector3(2.68, 0.3, 6)], delay: 350 },
+  { letter: "S", initialPosition: new THREE.Vector3(3.1, -2, 10), pathPoints: [new THREE.Vector3(1, -2, 10), new THREE.Vector3(0.8, 0.3, 8), new THREE.Vector3(1.3, 0.75, 7), new THREE.Vector3(2.1, 0.3, 6), new THREE.Vector3(4.3, 0.3, 6)], delay: 400 },
 ];
 
 // Arrays for custom parameters (radius, color, opacity)
@@ -401,7 +401,7 @@ const opacities = [0.5, 1, 0.5, 0.9, 0.9, 0.9];
 const fakelights = [];
 
 // Define the target position for the fakelights
-const endPosition = new THREE.Vector3(8, 1.1, 6.21);
+const endPosition = new THREE.Vector3(9, 1.1, 6.21);
 
 // Create a single delay for the entire animation
 const totalDelay = 1900; // 2000 milliseconds = 2 seconds
@@ -433,7 +433,7 @@ const animateBothScenes = function () {
       });
 
       const fakelight = new THREE.Mesh(geometry, material);
-      fakelight.position.set(-7, 1.1, 6.21);
+      fakelight.position.set(-9, 1.1, 6.21);
 
       mainScene.add(fakelight);
       fakelights.push(fakelight);
@@ -459,7 +459,7 @@ const animateBothScenes = function () {
           }
         }
         new TWEEN.Tween(fakelights[i].position)
-          .to({ x: endPosition.x }, 2000) // Move along the x-axis over 5000 ms
+          .to({ x: endPosition.x }, 1800) // Move along the x-axis ... ms
           .delay(delay) // Apply the calculated delay
           .start(); // Start the tween
       }
